@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>마이픽(MYPICK) · 투표 미리보기</title>
+<meta name="description" content="내 최애를 축하하는 생일 투표. 마이픽에서 응원하세요!">
+<meta property="og:title" content="마이픽 · 내 최애에게 투표하세요 💗">
+<meta property="og:description" content="매월 생일 투표 1위에게 전광판 광고 리워드! 마이픽에서 최애를 응원하세요.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://mypick.info/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://mypick.info/og-image.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Fredoka:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --pink:#ff4f9a; --pink-soft:#ff8cc0; --pink-pale:#ffe6f1; --plum:#2a1430; --gold:#ffc24b; --bg:#fff6fb; --ink:#3a2540; --muted:#8a7790; --line:#f4dced; }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:520px;margin:0 auto;padding:26px 20px 60px;}
+  .brand{display:flex;align-items:center;justify-content:center;gap:9px;font-family:'Fredoka',sans-serif;font-weight:700;font-size:1.25rem;color:var(--plum);margin-bottom:22px;}
+  .brand .hh{width:26px;height:26px;border-radius:8px;background:linear-gradient(140deg,var(--pink),var(--pink-soft));display:grid;place-items:center;color:#fff;font-size:.85rem;}
+  .card{position:relative;border-radius:26px;background:radial-gradient(120% 130% at 50% 0%,#3d1c47 0%,var(--plum) 60%);padding:34px 26px 30px;overflow:hidden;box-shadow:0 26px 60px -26px rgba(255,79,154,.6);text-align:center;}
+  .card::before{content:"";position:absolute;inset:0;opacity:.45;mix-blend-mode:screen;background-image:radial-gradient(rgba(255,140,192,.35) 1px,transparent 1.4px);background-size:9px 9px;pointer-events:none;}
+  .ava{position:relative;width:132px;height:132px;border-radius:50%;margin:0 auto 16px;object-fit:cover;border:4px solid rgba(255,255,255,.25);box-shadow:0 0 30px rgba(255,79,154,.5);display:grid;place-items:center;font-family:'Black Han Sans';font-size:3rem;color:#fff;background:linear-gradient(140deg,var(--pink),var(--pink-soft));}
+  .nm{position:relative;font-family:'Black Han Sans',sans-serif;font-weight:400;font-size:2.1rem;color:#fff;letter-spacing:.5px;text-shadow:0 0 16px rgba(255,120,180,.7);}
+  .gp{position:relative;color:var(--pink-soft);font-weight:500;margin-top:2px;}
+  .bday{position:relative;display:inline-block;margin-top:12px;background:rgba(255,255,255,.12);color:#ffe;padding:5px 14px;border-radius:999px;font-size:.86rem;}
+  .stat{position:relative;margin-top:20px;padding-top:18px;border-top:1px solid rgba(255,255,255,.14);display:flex;justify-content:center;gap:26px;}
+  .stat .n{font-family:'Fredoka',sans-serif;font-weight:700;font-size:1.5rem;color:#fff;}
+  .stat .l{font-size:.72rem;color:var(--pink-soft);}
+  .cta{display:block;margin:22px auto 0;background:linear-gradient(135deg,var(--pink),var(--pink-soft));color:#fff;font-weight:700;font-size:1.05rem;text-align:center;text-decoration:none;padding:16px;border-radius:16px;box-shadow:0 12px 26px -10px rgba(255,79,154,.7);border:none;cursor:pointer;width:100%;}
+  .sub{text-align:center;color:var(--muted);font-size:.84rem;margin-top:12px;}
+  .foot{text-align:center;margin-top:26px;font-size:.8rem;}
+  .foot a{color:var(--pink);text-decoration:none;font-weight:500;}
+  .miss{text-align:center;padding:40px 0;color:var(--muted);}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  .heart{display:inline-block;animation:bob 2.4s ease-in-out infinite;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><span class="hh">💗</span>MY PICK</div>
+  <div id="app"><div class="miss">불러오는 중…</div></div>
+  <div class="foot">powered by <a href="https://mypick.info">mypick.info</a></div>
+</div>
+
+<script src="roster.js"></script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+  // 앱 이미지가 있는 곳 (마이픽 투표 앱 레포)
+  const APP_BASE='https://seungju613-hub.github.io/AKDLVLR2026/';
+  // 출시되면 여기에 구글플레이 주소를 넣으세요. 비워두면 "곧 출시"로 표시됩니다.
+  const STORE_URL='';
+
+  const firebaseConfig={ apiKey:"AIzaSyA0INqoWE6Ae1SOkMxc2UBcQm7v4bAyv-c", authDomain:"mypick-d304e.firebaseapp.com", projectId:"mypick-d304e", storageBucket:"mypick-d304e.firebasestorage.app", messagingSenderId:"178281594523", appId:"1:178281594523:web:d6c493f81be0d90048103e" };
+
+  const app=$id('app');
+  function $id(i){return document.getElementById(i);}
+  function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+  const params=new URLSearchParams(location.search);
+  const idolId=params.get('idol');
+  const ROSTER=(window.ROSTER||[]);
+  const d=ROSTER.find(x=>(x.id||(x.name+'_'+x.group))===idolId);
+
+  if(!idolId || !d){
+    app.innerHTML=`<div class="miss">앗, 가수를 찾을 수 없어요.<br><br><a class="cta" href="https://mypick.info">마이픽 홈으로 →</a></div>`;
+  } else {
+    render(d, null, null);
+    // Firebase에서 실시간 득표·순위 읽기 (읽기 전용, 로그인 불필요)
+    (async()=>{
+      try{
+        const db=getFirestore(initializeApp(firebaseConfig));
+        const snap=await getDocs(collection(db,'tallies'));
+        const votes={}; snap.forEach(s=>votes[s.id]=(s.data().votes)||0);
+        const myVotes=votes[idolId]||0;
+        // 같은 생일월 + 같은 성별 코호트 내 순위
+        const cohort=ROSTER.filter(x=>+x.birthMonth===+d.birthMonth && (x.gender==='male')===(d.gender==='male'));
+        cohort.sort((a,b)=>(votes[a.id||(a.name+'_'+a.group)]||0)-(votes[b.id||(b.name+'_'+b.group)]||0));
+        const rank=cohort.length-cohort.findIndex(x=>(x.id||(x.name+'_'+x.group))===idolId);
+        render(d, myVotes, {rank,total:cohort.length});
+      }catch(e){ console.error(e); /* 실패해도 기본 미리보기는 보임 */ }
+    })();
+  }
+
+  function render(d, votes, rk){
+    const id=d.id||(d.name+'_'+d.group);
+    const photo=d.photo?(APP_BASE+d.photo):'';
+    const initial=(d.name||'?').trim().charAt(0);
+    const avatar = photo
+      ? `<img class="ava" src="${esc(photo)}" alt="${esc(d.name)}" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'ava',textContent:'${esc(initial)}'}))">`
+      : `<div class="ava">${esc(initial)}</div>`;
+    const genderTxt = d.gender==='male'?'보이즈':'걸즈';
+    const votesTxt = votes==null?'—':votes.toLocaleString('ko-KR');
+    const rankTxt = rk?`${rk.rank}위`:'—';
+    const ctaHref = STORE_URL || 'https://mypick.info';
+    const ctaLabel = STORE_URL ? '앱에서 투표하기 →' : '곧 출시! 알림받기 🔔';
+    app.innerHTML=`
+      <div class="card">
+        ${avatar}
+        <div class="nm">${esc(d.name)}</div>
+        <div class="gp">${esc(d.group)}</div>
+        <div class="bday">🎂 ${+d.birthMonth}월 ${+d.birthDay}일 · ${genderTxt}</div>
+        <div class="stat">
+          <div><div class="n">${votesTxt}</div><div class="l">현재 득표</div></div>
+          <div><div class="n">${rankTxt}</div><div class="l">${+d.birthMonth}월 ${genderTxt} 순위</div></div>
+        </div>
+      </div>
+      <a class="cta" href="${esc(ctaHref)}">${ctaLabel}</a>
+      <p class="sub"><span class="heart">💗</span> ${esc(d.name)}의 생일을 마이픽에서 함께 축하해요<br>투표는 앱에서 할 수 있어요</p>`;
+  }
+</script>
+</body>
+</html>
