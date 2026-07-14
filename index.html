@@ -1,231 +1,2289 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>마이픽(MYPICK) · 내 최애를 위한 투표 앱</title>
-<meta name="description" content="내 최애를 축하하는 가장 핑크빛 방법. 매월 생일 투표로 1위에게 전광판 광고 리워드를 선물하세요. 광고를 보고 픽을 모아 최애에게 투표하는 K-pop 팬 투표 앱, 마이픽.">
-<meta property="og:title" content="마이픽(MYPICK) · 내 최애를 위한 투표 앱">
-<meta property="og:description" content="내 최애를 축하하는 가장 핑크빛 방법. 매월 생일 투표 1위에게 전광판 광고 리워드!">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://mypick.info/">
-<meta property="og:image" content="https://mypick.info/og-image.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="마이픽(MYPICK) · 내 최애를 위한 투표 앱">
-<meta name="twitter:description" content="내 최애를 축하하는 가장 핑크빛 방법. 매월 생일 투표 1위에게 전광판 광고 리워드!">
-<meta name="twitter:image" content="https://mypick.info/og-image.png">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+<script>if(window.Capacitor)document.documentElement.classList.add('cap');</script>
+<title>마이픽 MYPICK</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Fredoka:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
   :root{
-    --pink:#ff4f9a;          /* 메인 핑크 */
-    --pink-soft:#ff8cc0;     /* 보조 핑크 */
-    --pink-pale:#ffe6f1;     /* 옅은 핑크 면 */
-    --plum:#2a1430;          /* 전광판 딥 톤 / 잉크 */
-    --gold:#ffc24b;          /* 1위·왕관 */
-    --lilac:#c79bff;         /* 반짝임 포인트 */
-    --bg:#fff6fb;            /* 페이지 배경 */
-    --ink:#3a2540;
-    --muted:#8a7790;
-    --line:#f4dced;
+    --bg:#ffffff; --bg-soft:#fff5f9; --bg-soft2:#fff0f6;
+    --pink:#ff4d8d; --pink-2:#ff7eb3; --pink-deep:#e63a78;
+    --grad:linear-gradient(135deg,#ff4d8d 0%,#ff85c0 100%);
+    --grad-soft:linear-gradient(135deg,#fff0f6,#ffe7f1);
+    --ink:#2c1622; --mute:#a98ba0; --mute-2:#c9aebf;
+    --line:#ffe1ec; --gold:#ffb13d;
   }
-  *{box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
-  body{
-    margin:0;background:var(--bg);color:var(--ink);
-    font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;
-    line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
-  }
-  .wrap{max-width:980px;margin:0 auto;padding:0 22px;}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{font-family:'Noto Sans KR',system-ui,sans-serif;background:#f4e9f0;min-height:100vh;display:flex;justify-content:center;align-items:flex-start;padding:22px 12px;color:var(--ink);}
+  .phone{width:100%;max-width:392px;height:clamp(620px,90vh,840px);background:var(--bg);border-radius:34px;box-shadow:0 40px 90px -28px rgba(120,40,80,.45);overflow:hidden;position:relative;display:flex;flex-direction:column;}
+  /* 앱(Capacitor)에서는 폰 프레임을 화면 전체로 펼치고 노치/하단바 안전영역 처리 */
+  html.cap body{padding:0;background:var(--bg);align-items:stretch;}
+  html.cap .phone{max-width:none;width:100%;height:100vh;height:100dvh;border-radius:0;box-shadow:none;}
+  html.cap .appbar{padding-top:calc(16px + env(safe-area-inset-top));}
+  html.cap .nav{padding-bottom:env(safe-area-inset-bottom);}
+  html.cap .login{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);}
 
-  /* ---------- nav ---------- */
-  nav{position:sticky;top:0;z-index:50;background:rgba(255,246,251,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
-  .nav-in{max-width:980px;margin:0 auto;padding:14px 22px;display:flex;align-items:center;justify-content:space-between;}
-  .brand{display:flex;align-items:center;gap:9px;font-family:'Fredoka',sans-serif;font-weight:700;font-size:1.32rem;color:var(--plum);letter-spacing:.3px;}
-  .brand .hh{width:26px;height:26px;border-radius:8px;background:linear-gradient(140deg,var(--pink),var(--pink-soft));display:grid;place-items:center;color:#fff;font-size:.85rem;box-shadow:0 4px 12px -3px rgba(255,79,154,.6);}
-  .nav-tag{font-size:.78rem;color:var(--pink);font-weight:700;background:var(--pink-pale);padding:5px 12px;border-radius:999px;}
+  /* app bar */
+  .appbar{padding:16px 18px 12px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line);background:var(--bg);z-index:5;}
+  .appbar .brandwrap{flex:1;min-width:0;}
+  .logo{font-family:'Black Han Sans',sans-serif;font-size:24px;line-height:1;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .tagline{font-size:11px;color:var(--pink-deep);font-weight:700;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .bal{display:flex;align-items:center;gap:7px;background:var(--grad-soft);border:1px solid var(--line);border-radius:14px;padding:8px 12px;flex:none;}
+  .bal .hh{font-size:15px;}
+  .bal .v{font-family:'Black Han Sans';font-size:17px;line-height:1;color:var(--pink-deep);}
+  .bal .u{font-size:11px;color:var(--mute);font-weight:700;margin-left:1px;}
+  .bal.bump{animation:bump .5s cubic-bezier(.2,.8,.2,1);}
+  @keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.08)}100%{transform:scale(1)}}
+  .bal.lack{animation:shake .45s;}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
 
-  /* ---------- hero ---------- */
-  header{padding:54px 0 30px;text-align:center;position:relative;}
-  .eyebrow{font-family:'Fredoka',sans-serif;font-weight:600;letter-spacing:.18em;text-transform:uppercase;font-size:.74rem;color:var(--pink);margin-bottom:20px;}
-  /* 전광판 = signature */
-  .billboard{
-    position:relative;max-width:680px;margin:0 auto;border-radius:26px;
-    background:radial-gradient(120% 140% at 50% 0%,#3d1c47 0%,var(--plum) 60%);
-    padding:46px 30px 50px;overflow:hidden;
-    box-shadow:0 30px 70px -28px rgba(255,79,154,.65), 0 0 0 1px rgba(255,255,255,.04) inset;
-  }
-  .billboard::before{ /* LED 도트 텍스처 */
-    content:"";position:absolute;inset:0;opacity:.5;mix-blend-mode:screen;
-    background-image:radial-gradient(rgba(255,140,192,.35) 1px,transparent 1.4px);
-    background-size:9px 9px;pointer-events:none;
-  }
-  .billboard::after{ /* 상단 글로우 */
-    content:"";position:absolute;left:50%;top:-40%;width:80%;height:80%;transform:translateX(-50%);
-    background:radial-gradient(closest-side,rgba(255,79,154,.45),transparent);filter:blur(8px);pointer-events:none;
-  }
-  .bb-frame{position:relative;}
-  .bb-pin{position:absolute;top:-30px;left:50%;transform:translateX(-50%);width:12px;height:12px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 4px rgba(255,194,75,.25);}
-  h1{
-    font-family:'Black Han Sans',sans-serif;font-weight:400;
-    font-size:clamp(2.3rem,8vw,3.6rem);line-height:1.12;margin:0;color:#fff;
-    text-shadow:0 0 18px rgba(255,120,180,.85),0 0 40px rgba(255,79,154,.45);letter-spacing:.5px;
-  }
-  h1 .accent{color:var(--pink-soft);}
-  .heart{display:inline-block;animation:bob 2.6s ease-in-out infinite;}
-  .bb-sub{margin:16px 0 0;color:#f3d9e8;font-size:1.02rem;font-weight:400;}
-  .hero-lead{max-width:560px;margin:26px auto 0;color:var(--muted);font-size:1.02rem;}
+  /* content */
+  .content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;background:linear-gradient(180deg,#fff8fc 0%,#ffeef7 55%,#ffe6f3 100%);}
+  .screen{display:none;padding:14px 14px 22px;}
+  .screen.on{display:block;}
+  .sc-title{font-size:18px;font-weight:900;margin:2px 4px 12px;}
+  .sc-title small{display:block;font-size:12px;color:var(--mute);font-weight:600;margin-top:2px;}
 
-  /* ---------- download ---------- */
-  .dl{display:flex;flex-wrap:wrap;gap:22px;align-items:center;justify-content:center;margin:32px auto 8px;}
-  .qr{width:128px;height:128px;border-radius:18px;border:2px dashed var(--pink-soft);background:#fff;display:grid;place-items:center;text-align:center;color:var(--muted);font-size:.74rem;line-height:1.4;padding:10px;}
-  .qr b{display:block;color:var(--pink);font-size:.82rem;margin-bottom:3px;}
-  .badges{display:flex;flex-direction:column;gap:10px;}
-  .badge{display:flex;align-items:center;gap:11px;padding:11px 18px;border-radius:14px;background:#fff;border:1px solid var(--line);min-width:200px;opacity:.85;}
-  .badge .ic{font-size:1.3rem;}
-  .badge .t{text-align:left;line-height:1.25;}
-  .badge .t small{display:block;font-size:.68rem;color:var(--muted);}
-  .badge .t span{font-weight:700;font-size:.96rem;color:var(--plum);}
-  .badge .soon{margin-left:auto;font-size:.66rem;font-weight:700;color:var(--pink);background:var(--pink-pale);padding:3px 9px;border-radius:999px;}
+  /* ad banner on ranking */
+  .ad-banner{width:calc(100% - 4px);margin:0 2px 11px;display:flex;align-items:center;gap:10px;border:none;cursor:pointer;background:var(--grad);color:#fff;border-radius:15px;padding:12px 14px;font-family:'Noto Sans KR';box-shadow:0 12px 24px -12px rgba(255,77,141,.8);transition:transform .1s;}
+  .ad-banner:active{transform:scale(.985);}
+  .ad-banner .abi{font-size:18px;}
+  .ad-banner .abt{font-weight:700;font-size:13.5px;} .ad-banner .abt b{font-family:'Black Han Sans';font-weight:400;}
+  .ad-banner .abgo{margin-left:auto;font-weight:800;font-size:12px;background:rgba(255,255,255,.22);padding:6px 11px;border-radius:99px;}
 
-  /* ---------- features ---------- */
-  section.feat{padding:30px 0 18px;}
-  .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
-  .card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:26px 22px;text-align:left;transition:transform .25s ease,box-shadow .25s ease;}
-  .card:hover{transform:translateY(-5px);box-shadow:0 22px 44px -26px rgba(255,79,154,.5);}
-  .card .emo{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font-size:1.4rem;margin-bottom:15px;}
-  .c1 .emo{background:var(--pink-pale);}
-  .c2 .emo{background:#fff2d6;}
-  .c3 .emo{background:#f0e6ff;}
-  .card h3{margin:0 0 7px;font-size:1.08rem;color:var(--plum);font-weight:700;letter-spacing:-.2px;}
-  .card p{margin:0;color:var(--muted);font-size:.92rem;}
-  .card .num{font-family:'Fredoka',sans-serif;font-weight:600;color:var(--pink-soft);font-size:.8rem;}
+  /* charge button + packages */
+  .charge-btn{width:calc(100% - 4px);margin:0 2px 14px;display:flex;align-items:center;gap:11px;border:none;cursor:pointer;background:linear-gradient(135deg,#ff4d8d,#b65cff);color:#fff;border-radius:16px;padding:14px 15px;font-family:'Noto Sans KR';box-shadow:0 14px 28px -12px rgba(180,92,255,.7);transition:transform .1s;text-align:left;}
+  .charge-btn:active{transform:scale(.985);}
+  .charge-btn .ci{font-size:21px;flex:none;}
+  .charge-btn .ct{font-weight:800;font-size:14px;line-height:1.2;} .charge-btn .ct small{display:block;font-size:10.5px;font-weight:500;opacity:.9;margin-top:2px;}
+  .charge-btn .cgo{margin-left:auto;font-weight:800;font-size:12px;background:rgba(255,255,255,.22);padding:7px 12px;border-radius:99px;flex:none;}
+  .pack{display:flex;align-items:center;gap:11px;border:1px solid var(--line);border-radius:15px;padding:12px 13px;margin-bottom:8px;cursor:pointer;position:relative;transition:transform .1s;}
+  .pack:active{transform:scale(.99);}
+  .pack.rec{border-color:var(--pink);background:var(--grad-soft);}
+  .pack .pemoji{font-size:20px;flex:none;width:24px;text-align:center;}
+  .pack .pinfo{flex:1;min-width:0;}
+  .pack .ppicks{font-family:'Black Han Sans';font-size:15px;color:var(--pink-deep);}
+  .pack .pvotes{font-size:10.5px;color:var(--mute);font-weight:600;margin-top:1px;}
+  .pack .pbonus{display:inline-block;font-size:9.5px;font-weight:800;color:#fff;background:var(--gold);border-radius:99px;padding:1px 7px;margin-left:5px;}
+  .pack .pbonus.zero{background:#d9c7d2;}
+  .pack .pprice{flex:none;background:var(--grad);color:#fff;font-weight:800;font-size:12.5px;border-radius:11px;padding:9px 12px;}
+  .pack .precbadge{position:absolute;top:-8px;left:12px;background:var(--grad);color:#fff;font-size:9.5px;font-weight:800;padding:2px 8px;border-radius:99px;}
 
-  /* ---------- closing ---------- */
-  .closing{margin:38px 0 10px;text-align:center;background:linear-gradient(135deg,var(--pink),var(--pink-soft));border-radius:24px;padding:40px 26px;color:#fff;position:relative;overflow:hidden;}
-  .closing::after{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.18) 1px,transparent 1.4px);background-size:14px 14px;opacity:.6;}
-  .closing h2{position:relative;font-family:'Black Han Sans',sans-serif;font-weight:400;font-size:clamp(1.6rem,5vw,2.1rem);margin:0 0 8px;letter-spacing:.5px;}
-  .closing p{position:relative;margin:0;opacity:.95;font-size:1rem;}
+  /* round tabs */
+  .tabs{display:flex;gap:7px;margin:9px 2px 0;}
+  .tab{flex:1;border:1px solid var(--line);background:var(--bg-soft);color:var(--mute);border-radius:13px;padding:9px 4px;font-weight:800;font-size:13px;cursor:pointer;text-align:center;transition:.16s;}
+  .tab .sub{display:block;font-size:9.5px;font-weight:600;margin-top:2px;}
+  .tab.active{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 8px 18px -8px rgba(255,77,141,.6);}
 
-  /* ---------- footer ---------- */
-  footer{margin-top:46px;border-top:1px solid var(--line);background:#fff;}
-  .foot-in{max-width:980px;margin:0 auto;padding:34px 22px 44px;}
-  .foot-top{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between;align-items:center;margin-bottom:22px;}
-  .foot-brand{font-family:'Fredoka',sans-serif;font-weight:700;font-size:1.15rem;color:var(--plum);}
-  .foot-links{display:flex;gap:8px;flex-wrap:wrap;}
-  .foot-links a{font-size:.86rem;font-weight:500;color:var(--plum);text-decoration:none;padding:8px 15px;border:1px solid var(--line);border-radius:999px;transition:background .2s,color .2s;}
-  .foot-links a:hover{background:var(--pink);color:#fff;border-color:var(--pink);}
-  .biz{font-size:.78rem;color:var(--muted);line-height:1.85;}
-  .biz .sep{color:var(--line);}
-  .copy{margin-top:14px;font-size:.76rem;color:var(--muted);}
+  /* boys/girls toggle */
+  .gtoggle{display:flex;gap:6px;margin:9px 2px 0;background:var(--bg-soft);border:1px solid var(--line);border-radius:13px;padding:4px;}
+  .hub-h{font-family:'Black Han Sans';font-size:19px;color:var(--pink-deep);margin:16px 2px 12px;line-height:1.2;}
+  .hub-h small{display:block;font-family:'Noto Sans KR';font-size:11px;color:var(--mute);font-weight:400;margin-top:3px;}
+  .hub-card{margin-bottom:10px;width:100%;}
+  .back-hub{background:none;border:none;color:var(--pink-deep);font-weight:700;font-size:13px;padding:6px 2px 10px;cursor:pointer;}
+  .soon-box{text-align:center;padding:54px 20px;}
+  .soon-box .soon-emo{font-size:48px;}
+  .soon-box .soon-t{font-family:'Black Han Sans';font-size:21px;color:var(--pink-deep);margin-top:8px;}
+  .soon-box .soon-d{font-size:13px;color:var(--mute);margin-top:7px;}
+  #hubPodium{margin-top:20px;}
+  .pod-sec-h{font-family:'Black Han Sans';font-size:17px;color:var(--pink-deep);margin:0 2px 10px;}
+  .pod-card{background:var(--bg);border:1px solid var(--line);border-radius:16px;padding:13px 14px;margin-bottom:11px;cursor:pointer;transition:transform .15s,box-shadow .15s;}
+  .pod-card:active{transform:scale(.99);}
+  .pod-ch{display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:700;color:var(--pink-deep);margin-bottom:10px;}
+  .pod-ch .go{font-size:11px;color:var(--mute);font-weight:400;}
+  .pod-row{display:flex;gap:8px;}
+  .pod-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center;min-width:0;}
+  .pod-medal{font-size:15px;line-height:1;}
+  .pod-th{width:52px;height:52px;border-radius:50%;position:relative;overflow:hidden;display:grid;place-items:center;color:#fff;font-family:'Black Han Sans';font-size:19px;border:2px solid var(--line);}
+  .pod-th .ava-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  .pod-item.p1 .pod-th{border-color:#ffcf4a;width:58px;height:58px;}
+  .pod-nm{font-size:12px;font-weight:700;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .pod-vt{font-size:10.5px;color:var(--mute);}
+  .pod-soon{text-align:center;color:var(--mute);font-size:12.5px;padding:8px 0 2px;}
+  .gbtn{flex:1;border:none;background:transparent;color:var(--mute);border-radius:10px;padding:9px 4px;font-family:'Noto Sans KR';font-weight:800;font-size:13px;cursor:pointer;transition:.15s;}
+  .gbtn.on{background:var(--grad);color:#fff;box-shadow:0 6px 14px -6px rgba(255,77,141,.7);}
 
-  @keyframes bob{0%,100%{transform:translateY(0) rotate(-4deg);}50%{transform:translateY(-7px) rotate(4deg);}}
-  .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease;}
-  .reveal.in{opacity:1;transform:none;}
+  .round-head{margin:11px 2px 0;background:var(--bg-soft);border:1px solid var(--line);border-radius:16px;padding:12px 13px;}
+  .stage-tabs{display:flex;flex-direction:column;gap:9px;margin:12px 2px 0;}
+  .stage-tab{width:100%;border:1.5px solid var(--line);background:var(--bg);border-radius:15px;cursor:pointer;text-align:center;font-family:'Noto Sans KR';display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .stage-tab .st-t{font-family:'Black Han Sans';color:var(--mute);line-height:1.1;}
+  .stage-tab .st-s{font-size:11px;color:var(--mute-2);font-weight:600;margin-top:4px;}
+  .stage-tab.big{padding:16px 8px;}
+  .stage-tab.big .st-t{font-size:22px;}
+  .stage-tab.slim{padding:11px 8px;}
+  .stage-tab.slim .st-t{font-size:16px;}
+  .stage-tab.on{border-color:transparent;background:var(--grad);box-shadow:0 5px 13px -7px rgba(255,77,141,.55);}
+  .stage-tab.on .st-t,.stage-tab.on .st-s{color:#fff;}
+  .rh-cap{font-size:11px;font-weight:700;color:var(--mute);margin-bottom:4px;}
+  .rh-note{font-size:10.5px;color:var(--mute-2);font-weight:500;margin-bottom:9px;line-height:1.5;}
+  .row.adv{background:linear-gradient(90deg,#fff7e9,var(--surface) 55%);}
+  .row.adv .rank{color:#e29a2b;}
+  .status-row{display:flex;align-items:center;gap:8px;}
+  .chip{font-size:11px;font-weight:800;padding:4px 10px;border-radius:99px;}
+  .chip.live{background:#ffe3ee;color:var(--pink-deep);}
+  .chip.soon{background:#f1e7ee;color:var(--mute);}
+  .dday{margin-left:auto;font-family:'Black Han Sans';font-size:15px;color:var(--pink);}
+  .timeline{display:flex;align-items:center;gap:5px;margin-top:11px;}
+  .ph{flex:1;text-align:center;font-size:10px;color:var(--mute);line-height:1.3;}
+  .ph .t{display:block;font-weight:800;}
+  .ph.on .t{color:var(--pink-deep);} .ph .d{font-size:9.5px;}
+  .ph-ar{color:var(--mute-2);font-size:11px;}
 
-  @media (max-width:720px){
-    .feat-grid{grid-template-columns:1fr;}
-    .billboard{padding:38px 20px 42px;}
-    .nav-tag{display:none;}
-    .badge{min-width:0;flex:1;}
-  }
-  @media (prefers-reduced-motion:reduce){
-    *{animation:none!important;}
-    .reveal{opacity:1;transform:none;transition:none;}
-    html{scroll-behavior:auto;}
-  }
+  .prize-tag{margin:12px 2px 8px;padding:13px 15px;border-radius:14px;background:var(--grad-soft);border:1.5px solid #ffc2dc;font-size:14px;color:var(--pink-deep);font-weight:800;line-height:1.5;}
+  .prize-tag b{color:var(--pink-deep);}
+
+  .list{display:flex;flex-direction:column;position:relative;margin-top:4px;}
+  .row{display:flex;align-items:center;gap:11px;padding:10px 8px;border-radius:18px;border:1px solid transparent;will-change:transform;}
+  .row + .row{margin-top:4px;}
+  .rank{width:22px;text-align:center;flex:none;font-family:'Black Han Sans';font-size:17px;color:var(--mute-2);}
+  .avatar{width:44px;height:44px;border-radius:13px;flex:none;display:flex;align-items:center;justify-content:center;font-family:'Black Han Sans';font-size:17px;color:#fff;background-size:cover;background-position:center;position:relative;overflow:hidden;}
+  .ava-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  .who{flex:1;min-width:0;}
+  .who .nm{font-weight:800;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .crown{display:none;font-size:12px;margin-left:3px;}
+  .who .gp{font-size:11px;color:var(--mute);margin-top:1px;}
+  .who .mine{display:none;font-size:10px;color:var(--pink);font-weight:800;margin-top:2px;}
+  .votes{flex:none;text-align:right;min-width:72px;}
+  .votes .n{font-family:'Black Han Sans';font-size:15px;line-height:1;color:var(--ink);}
+  .votes .u{font-size:10px;color:var(--mute);}
+  .votes .n.tick{animation:tick .5s cubic-bezier(.2,.8,.2,1);}
+  @keyframes tick{0%{transform:scale(1)}45%{transform:scale(1.18);color:var(--pink)}100%{transform:scale(1)}}
+  .heart-btn{flex:none;border:none;background:var(--grad);color:#fff;border-radius:13px;padding:9px 13px;font-family:'Noto Sans KR';font-weight:800;font-size:12px;cursor:pointer;transition:transform .1s;box-shadow:0 8px 16px -8px rgba(255,77,141,.7);}
+  .heart-btn:active{transform:scale(.93);}
+  .row.top{background:var(--grad-soft);border-color:#ffcfe2;box-shadow:0 10px 26px -16px rgba(255,77,141,.8);}
+  .row.top .rank{color:var(--pink);} .row.top .crown{display:inline-block;}
+
+  /* cards (earn / me / bias) */
+  .card{background:var(--bg);border:1px solid var(--line);border-radius:18px;padding:15px;margin:0 2px 11px;box-shadow:0 10px 26px -18px rgba(255,77,141,.5);}
+  .card.soft{background:var(--bg-soft);}
+  .card-h{display:flex;align-items:center;gap:9px;}
+  .card-ic{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:19px;background:var(--grad-soft);flex:none;}
+  .card-t{font-weight:800;font-size:14px;} .card-d{font-size:11.5px;color:var(--mute);margin-top:2px;line-height:1.4;}
+  .reward{margin-left:auto;font-family:'Black Han Sans';font-size:15px;color:var(--pink-deep);flex:none;}
+  .cta{width:100%;border:none;background:var(--grad);color:#fff;font-family:'Noto Sans KR';font-weight:800;font-size:14px;border-radius:13px;padding:12px;margin-top:12px;cursor:pointer;transition:transform .1s;box-shadow:0 10px 20px -10px rgba(255,77,141,.7);}
+  .cta:active{transform:scale(.98);}
+  .cta.ghost{background:var(--bg-soft);color:var(--pink-deep);border:1px solid var(--line);box-shadow:none;}
+  .cta:disabled{background:#f0e6ec;color:var(--mute-2);box-shadow:none;cursor:default;}
+
+  .mission{display:flex;align-items:center;gap:10px;padding:11px 4px;border-bottom:1px dashed var(--line);}
+  .mission:last-child{border-bottom:none;}
+  .mission .mi{width:34px;height:34px;border-radius:10px;background:var(--bg-soft2);display:flex;align-items:center;justify-content:center;font-size:16px;flex:none;}
+  .mission .mt{flex:1;font-size:12.5px;font-weight:700;}
+  .mission .mt small{display:block;font-size:10.5px;color:var(--mute);font-weight:500;margin-top:1px;}
+  .mission .mr{font-family:'Black Han Sans';font-size:13px;color:var(--pink-deep);flex:none;}
+  .note{font-size:10.5px;color:var(--mute);margin:8px 4px 0;line-height:1.5;}
+
+  /* bias picker */
+  .pick-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:0 2px;}
+  .pick{display:flex;align-items:center;gap:9px;padding:10px;border:1px solid var(--line);border-radius:14px;background:var(--bg);cursor:pointer;transition:.12s;}
+  .pick:active{transform:scale(.97);} .pick.sel{border-color:var(--pink);background:var(--grad-soft);}
+  .pick .pa{width:34px;height:34px;border-radius:10px;flex:none;display:flex;align-items:center;justify-content:center;font-family:'Black Han Sans';color:#fff;font-size:14px;background-size:cover;background-position:center;position:relative;overflow:hidden;}
+  .pick .pn{font-size:12px;font-weight:800;} .pick .pg{font-size:10px;color:var(--mute);}
+  .bias-hero{margin:0 2px 12px;border-radius:20px;overflow:hidden;background:var(--grad);color:#fff;padding:18px;position:relative;}
+  .bias-hero .bphoto{width:78px;height:78px;border-radius:20px;background:rgba(255,255,255,.25);background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;font-family:'Black Han Sans';font-size:30px;border:2px solid rgba(255,255,255,.6);position:relative;overflow:hidden;}
+  .bias-hero .bnm{font-size:22px;font-weight:900;margin-top:12px;}
+  .bias-hero .bgp{font-size:12px;opacity:.92;font-weight:700;}
+  .bias-hero .brow{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
+  .pillinfo{background:rgba(255,255,255,.22);border-radius:10px;padding:6px 10px;font-size:11px;font-weight:700;}
+  .bias-hero .bbtns{display:flex;gap:8px;margin-top:14px;}
+  .bbtn{flex:1;border:none;border-radius:11px;padding:10px;font-family:'Noto Sans KR';font-weight:800;font-size:12px;cursor:pointer;background:#fff;color:var(--pink-deep);}
+  .bbtn.outline{background:rgba(255,255,255,.18);color:#fff;}
+  .bbtn.wide{display:block;width:100%;flex:none;margin-top:9px;padding:13px;font-size:13px;background:var(--bg-soft);color:var(--pink-deep);border:1px solid var(--line);}
+
+  /* info rows */
+  .inforow{display:flex;align-items:center;gap:10px;padding:13px 4px;border-bottom:1px solid var(--line);}
+  .inforow:last-child{border-bottom:none;}
+  .inforow .il{font-size:12.5px;color:var(--mute);font-weight:700;width:84px;flex:none;}
+  .inforow .iv{font-size:13.5px;font-weight:700;flex:1;}
+  .nick-input{flex:1;min-width:0;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-family:'Noto Sans KR';font-size:13px;color:var(--ink);background:var(--bg-soft);}
+  .mini-save{border:none;background:var(--grad);color:#fff;font-weight:800;border-radius:10px;padding:9px 13px;font-size:12px;cursor:pointer;flex:none;}
+
+  /* bottom nav */
+  .nav{display:flex;border-top:1px solid var(--line);background:var(--bg);flex:none;}
+  .nav button{flex:1;border:none;background:none;padding:9px 2px 11px;cursor:pointer;color:var(--mute-2);display:flex;flex-direction:column;align-items:center;gap:3px;font-family:'Noto Sans KR';font-weight:700;font-size:10.5px;}
+  .nav button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;}
+  .nav button.on{color:var(--pink);}
+  .nav button.on .navic{background:var(--grad-soft);}
+  .navic{width:42px;height:26px;border-radius:99px;display:flex;align-items:center;justify-content:center;}
+
+  /* modals */
+  .scrim{position:absolute;inset:0;background:rgba(60,22,34,.45);backdrop-filter:blur(3px);display:none;align-items:flex-end;justify-content:center;z-index:30;}
+  .scrim.show{display:flex;}
+  .sheet{width:100%;background:#fff;border-radius:24px 24px 0 0;padding:20px 18px 24px;animation:rise .25s ease;}
+  @keyframes rise{from{transform:translateY(30px);opacity:.6}to{transform:translateY(0);opacity:1}}
+  .sheet h3{margin:0 0 3px;font-size:17px;font-weight:900;}
+  .sheet p{margin:0 0 14px;font-size:12px;color:var(--mute);}
+  .opt{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:15px;padding:13px 14px;margin-bottom:9px;cursor:pointer;transition:.12s;}
+  .opt:active{transform:scale(.98);}
+  .opt .ov{font-family:'Black Han Sans';font-size:18px;color:var(--pink-deep);min-width:58px;}
+  .opt .ovs{font-size:10px;color:var(--mute);font-weight:600;display:block;}
+  .opt .op{margin-left:auto;font-size:13px;font-weight:800;color:var(--ink);}
+  .opt .op small{color:var(--mute);font-weight:600;}
+  .opt.disabled{opacity:.4;pointer-events:none;}
+  .opt.best{border-color:var(--pink);background:var(--grad-soft);}
+  .opt-close{width:100%;border:none;background:var(--bg-soft);color:var(--mute);font-weight:800;border-radius:12px;padding:11px;margin-top:5px;cursor:pointer;font-family:'Noto Sans KR';}
+
+  /* ad modal centered */
+  .scrim.center{align-items:center;padding:28px;}
+  .ad-card{width:100%;background:#fff;border-radius:22px;padding:24px;text-align:center;}
+  .ad-card .tv{font-size:34px;} .ad-card h3{margin:8px 0 2px;font-size:16px;} .ad-card p{margin:0;font-size:12px;color:var(--mute);}
+  .ad-prog{height:8px;border-radius:99px;background:#f1e2ea;margin:18px 0 6px;overflow:hidden;}
+  .ad-prog>i{display:block;height:100%;width:0;background:var(--grad);}
+  .ad-count{font-family:'Black Han Sans';font-size:13px;color:var(--mute);}
+  .ad-done{background:var(--grad);border:none;color:#fff;font-weight:800;border-radius:14px;padding:12px 18px;font-size:14px;margin-top:14px;cursor:pointer;display:none;font-family:'Noto Sans KR';}
+
+  .toast{position:absolute;left:50%;bottom:84px;transform:translateX(-50%) translateY(16px);background:var(--ink);color:#fff;font-weight:800;font-size:13px;padding:11px 18px;border-radius:99px;box-shadow:0 16px 30px -10px rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:.25s;z-index:40;white-space:nowrap;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .floaty{position:absolute;font-family:'Black Han Sans';font-size:15px;color:var(--pink);pointer-events:none;z-index:35;animation:fl .85s ease forwards;}
+  @keyframes fl{0%{opacity:0;transform:translateY(0) scale(.7)}20%{opacity:1}100%{opacity:0;transform:translateY(-30px) scale(1.15)}}
+
+  :focus-visible{outline:2px solid var(--pink);outline-offset:2px;}
+  /* lang toggle */
+  .langbtn{flex:none;border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:7px 9px;font-family:'Noto Sans KR';font-weight:800;font-size:11px;color:var(--pink-deep);cursor:pointer;}
+  .langbtn b{color:var(--pink);}
+  .langbtn .off{color:var(--mute-2);}
+
+  /* login overlay */
+  .login{position:absolute;inset:0;z-index:60;background:linear-gradient(165deg,#ff6aa8 0%,#ff92c6 52%,#ffc2de 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:34px 26px;text-align:center;color:#fff;transition:opacity .35s ease,transform .35s ease;}
+  .login.hide{opacity:0;transform:translateY(-12px);pointer-events:none;}
+  .login .ltag{font-size:15px;font-weight:700;line-height:1.7;opacity:.97;margin-bottom:12px;text-shadow:0 2px 10px rgba(190,40,110,.25);}
+  .login .llogo{font-family:'Black Han Sans';font-size:52px;line-height:1;color:#fff;text-shadow:0 4px 18px rgba(190,40,110,.35);}
+  .login .lsub{font-size:13px;font-weight:700;opacity:.95;margin:14px 0 34px;line-height:1.6;}
+  .login .lbtns{width:100%;max-width:300px;display:flex;flex-direction:column;gap:10px;}
+  .sso{border:0;border-radius:14px;padding:13px;font-family:'Noto Sans KR';font-weight:800;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 6px 16px rgba(0,0,0,.13);}
+  .sso.kakao{background:#FEE500;color:#191600;}
+  .sso.naver{background:#03C75A;color:#fff;}
+  .sso.google{background:#fff;color:#1f1f1f;border:1px solid #e5e0e3;}
+  .login .browse{margin-top:22px;background:none;border:0;color:#fff;font-family:inherit;font-weight:700;font-size:13px;text-decoration:underline;opacity:.92;cursor:pointer;}
+  .sso.email{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.45);}
+  .email-form{display:none;flex-direction:column;gap:8px;margin-top:4px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);border-radius:14px;padding:12px;}
+  .email-form.show{display:flex;}
+  .em-input{border:0;border-radius:11px;padding:11px 13px;font-family:'Noto Sans KR';font-size:14px;color:#2a2230;background:#fff;outline:none;}
+  .em-go{border:0;border-radius:11px;padding:12px;background:#2a2230;color:#fff;font-family:'Noto Sans KR';font-weight:800;font-size:14px;cursor:pointer;}
+  .em-go:disabled{opacity:.6;}
+  .em-hint{font-size:10.5px;color:#fff;opacity:.85;text-align:center;}
+  .login .lnote{margin-top:24px;font-size:10.5px;opacity:.8;line-height:1.6;max-width:280px;}
+
+  /* 더보기 menu rows */
+  .menurow{display:flex;align-items:center;gap:11px;padding:13px 4px;cursor:pointer;border-bottom:1px solid var(--line);}
+  .menurow:last-child{border-bottom:0;}
+  .menurow .mri{width:34px;height:34px;border-radius:10px;background:var(--grad-soft);display:flex;align-items:center;justify-content:center;font-size:17px;flex:none;}
+  .menurow .mrt{flex:1;font-weight:700;font-size:13.5px;}
+  .menurow .mrt small{display:block;font-weight:500;font-size:11px;color:var(--mute);margin-top:2px;}
+  .menurow .mrgo{color:var(--mute-2);font-size:18px;}
+
+  /* info sheet */
+  .isheet{max-height:82vh;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+  .isheet h3{font-family:'Black Han Sans';font-size:19px;color:var(--ink);margin:2px 0 6px;}
+  .isheet p{font-size:12.5px;color:var(--ink);line-height:1.6;margin:8px 0;}
+  .isheet .warn{background:var(--bg-soft);border:1px solid var(--line);border-radius:12px;padding:11px 13px;font-size:11.5px;color:var(--ink);line-height:1.7;}
+  .isheet .warn b{color:var(--pink-deep);}
+  .isheet .mailbox{display:flex;align-items:center;justify-content:center;gap:7px;background:var(--grad-soft);border:1px solid var(--line);border-radius:12px;padding:11px;font-weight:800;font-size:13px;color:var(--pink-deep);margin:10px 0;}
+  .isheet .primary{display:block;width:100%;border:0;background:var(--grad);color:#fff;font-family:'Noto Sans KR';font-weight:800;font-size:14px;padding:13px;border-radius:13px;cursor:pointer;margin-top:6px;text-align:center;text-decoration:none;}
+
+  /* charge tabs */
+  .ctabs{display:flex;gap:7px;margin:6px 0 12px;}
+  .ctab{flex:1;border:1px solid var(--line);background:var(--bg);border-radius:11px;padding:9px;font-family:'Noto Sans KR';font-weight:800;font-size:12.5px;color:var(--mute);cursor:pointer;}
+  .ctab.on{background:var(--grad);color:#fff;border-color:transparent;}
+
+  /* invite card */
+  .invite-code{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--bg-soft);border:1px dashed var(--pink-2);border-radius:12px;padding:10px 13px;margin-top:8px;}
+  .invite-code .ic-label{font-size:11px;color:var(--mute);font-weight:700;}
+  .invite-code .ic-code{font-family:'Black Han Sans';font-size:16px;color:var(--pink-deep);letter-spacing:1px;}
+
+  /* 마이최애 검색 */
+  .bias-search{width:100%;border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;font-family:'Noto Sans KR';font-weight:600;font-size:14px;margin:10px 0 6px;outline:none;background:var(--bg);color:var(--ink);}
+  .bias-search:focus{border-color:var(--pink);}
+  .bias-hint{text-align:center;color:var(--mute);font-size:12px;line-height:1.8;padding:22px 10px;}
+  /* 내정보 최애 썸네일 */
+  .mebias{display:flex;align-items:center;gap:7px;justify-content:flex-start;}
+  .mebias .mb-thumb{width:26px;height:26px;border-radius:50%;background-size:cover;background-position:center;flex:none;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:800;position:relative;overflow:hidden;}
+  .mebias small{color:var(--mute);font-weight:600;}
+
+  /* 팬 제출 사진 */
+  .fan-photos{margin-top:12px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:13px;}
+  .fp-head{font-size:13px;font-weight:800;color:var(--ink);margin-bottom:9px;}
+  .fp-head span{font-size:10.5px;font-weight:600;color:var(--mute);margin-left:4px;}
+  .fp-strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;}
+  .fp-add{flex:none;width:58px;height:58px;border-radius:12px;border:1.5px dashed var(--pink-2);background:var(--bg-soft);color:var(--pink);font-size:20px;font-weight:800;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;}
+  .fp-add span{font-size:8.5px;font-weight:700;margin-top:2px;}
+  .fp-thumb{flex:none;width:58px;height:58px;border-radius:12px;overflow:hidden;border:2px solid transparent;background:none;padding:0;cursor:pointer;}
+  .fp-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .fp-thumb.on{border-color:var(--pink);}
+  .fp-note{font-size:10.5px;color:var(--mute);line-height:1.6;margin-top:10px;}
+  .fp-note b{color:var(--pink-deep);}
+  .adm-list{display:flex;flex-direction:column;gap:10px;margin-top:6px;max-height:50vh;overflow-y:auto;}
+  .grpchk{display:flex;align-items:center;gap:10px;padding:9px 6px;border-bottom:1px solid var(--line);font-size:14px;cursor:pointer;}
+  .grpchk input{width:18px;height:18px;accent-color:var(--pink);flex:none;}
+  .selbox{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;font-size:14px;font-family:inherit;background:#fff;color:var(--ink);}
+  .hint{font-size:12px;color:var(--mute);margin:5px 0 0;line-height:1.5;}
+  .invite-box{display:flex;align-items:center;gap:8px;background:#fff4f9;border:1px dashed var(--pink-2);border-radius:12px;padding:10px 12px;margin:10px 0 8px;}
+  .invite-code{flex:1;font-family:'Black Han Sans',sans-serif;font-size:18px;letter-spacing:.08em;color:var(--pink-deep);}
+  .cta.ghost{background:#fff;color:var(--pink-deep);border:1.5px solid var(--pink-2);margin-top:6px;}
+  .inv-stat{font-size:12px;color:var(--mute);margin-top:8px;text-align:center;line-height:1.5;}
+  .reward-btn{display:inline-block;margin-left:6px;background:var(--grad);color:#fff;border:none;border-radius:999px;padding:4px 12px;font-size:11.5px;font-weight:700;cursor:pointer;vertical-align:middle;white-space:nowrap;}
+  .reward-place{display:inline-block;background:var(--grad-soft);color:var(--pink-deep);font-weight:700;font-size:13px;padding:6px 13px;border-radius:999px;margin-bottom:10px;}
+  .reward-specs{background:var(--bg-soft);border-radius:12px;padding:13px 15px;font-size:12.5px;color:var(--ink);line-height:1.95;margin-top:4px;}
+  .adm-card{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:13px;padding:8px;}
+  .adm-img{width:54px;height:54px;border-radius:10px;object-fit:cover;flex:none;background:var(--bg-soft);}
+  .adm-meta{flex:1;font-weight:800;font-size:13px;color:var(--ink);}
+  .adm-acts{display:flex;gap:6px;flex:none;}
+  .adm-acts button{border:0;border-radius:9px;padding:8px 11px;font-family:'Noto Sans KR';font-weight:800;font-size:12px;cursor:pointer;}
+  .adm-ok{background:var(--grad);color:#fff;}
+  .adm-no{background:var(--bg-soft);color:var(--mute);}
+
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
 </style>
 </head>
 <body>
-
-<nav>
-  <div class="nav-in">
-    <div class="brand"><span class="hh">💗</span>MY PICK</div>
-    <span class="nav-tag">앱 출시 예정</span>
+<div class="phone">
+  <div class="appbar">
+    <div class="brandwrap">
+      <div class="logo">마이픽</div>
+      <div class="tagline">내 최애를 위한 마이픽! 💗</div>
+    </div>
+    <button class="langbtn" id="langBtn" aria-label="언어 전환"><b>한</b>/<span class="off">EN</span></button>
+    <div class="bal" id="bal"><span class="hh">⭐</span><span class="v" id="starVal">0</span><span class="hh" style="margin-left:8px">💗</span><span class="v" id="heartVal">0</span></div>
   </div>
-</nav>
 
-<header>
-  <div class="wrap">
-    <div class="eyebrow">K-POP 최애 투표</div>
-    <div class="billboard reveal">
-      <div class="bb-frame">
-        <span class="bb-pin"></span>
-        <h1>내 최애를 위한<br><span class="accent">마이픽!</span> <span class="heart">💗</span></h1>
-        <p class="bb-sub">내 최애를 축하하는 가장 핑크빛 방법</p>
+  <div class="content">
+    <!-- ===== 랭킹 ===== -->
+    <section class="screen on" id="sc-rank">
+      <button class="ad-banner" id="adBannerBtn">
+        <span class="abi">📺</span>
+        <span class="abt">광고 보고 <b>하트픽 5개</b> 받기</span>
+        <span class="abgo">받기 →</span>
+      </button>
+
+      <!-- 허브(코너 선택) -->
+      <div id="rankHub">
+        <div class="hub-h">투표하기<small>참여할 코너를 골라주세요</small></div>
+        <button class="charge-btn hub-card" data-hub="final"><span class="ci">🎂</span><span class="ct">생일 본선<small>이달의 생일 주인공 · 전광판 광고!</small></span><span class="cgo">→</span></button>
+        <button class="charge-btn hub-card" data-hub="prelim"><span class="ci">⚔️</span><span class="ct">생일 예선<small>다가오는 달, TOP 15을 향한 경쟁</small></span><span class="cgo">→</span></button>
+        <button class="charge-btn hub-card" data-hub="star"><span class="ci">⭐</span><span class="ct">이달의 스타<small>최애에게 매달 힘을 실어주세요</small></span><span class="cgo">→</span></button>
+        <button class="charge-btn hub-card" data-hub="group"><span class="ci">👥</span><span class="ct">이달의 그룹<small>곧 오픈 예정이에요 🔜</small></span><span class="cgo">→</span></button>
+        <div id="hubPodium"></div>
+      </div>
+
+      <!-- 생일 투표(본선/예선) 하위뷰 -->
+      <div id="rankVote" style="display:none">
+        <button class="back-hub" id="backHub">← 투표 목록으로</button>
+        <div class="stage-tabs" id="stageTabs"></div>
+        <div class="tabs" id="tabs"></div>
+        <div class="prize-tag" id="prizeTag"></div>
+        <div class="list" id="list"></div>
+        <div class="round-head" id="roundHead"></div>
+      </div>
+
+      <!-- 이달의 스타 하위뷰 -->
+      <div id="rankStar" style="display:none">
+        <button class="back-hub" id="backHubS">← 투표 목록으로</button>
+        <div class="prize-tag" id="starTag"></div>
+        <div class="list" id="starList"></div>
+        <button class="charge-btn" id="starNominate" style="margin-top:8px"><span class="ci">📝</span><span class="ct">다음달 나의 스타 등록<small>최애를 다음달 후보로 추천해요</small></span><span class="cgo">신청 →</span></button>
+        <div class="round-head" id="starRoundHead" style="margin-top:12px"></div>
+      </div>
+
+      <!-- 이달의 그룹 하위뷰 -->
+      <div id="rankGroup" style="display:none">
+        <button class="back-hub" id="backHubG">← 투표 목록으로</button>
+        <div class="prize-tag" id="groupTag"></div>
+        <div class="list" id="groupList"></div>
+        <div class="round-head" id="groupRoundHead" style="margin-top:12px"></div>
+      </div>
+    </section>
+
+    <!-- ===== 마이최애 ===== -->
+    <section class="screen" id="sc-bias">
+      <div class="sc-title">마이최애<small>내 최애를 골라 응원하세요</small></div>
+      <div id="biasBody"></div>
+    </section>
+
+    <!-- ===== 픽 모으기 ===== -->
+    <section class="screen" id="sc-earn">
+      <div class="sc-title">픽 모으기<small>스타픽으로 투표해요 · 스타픽 1개 = 100표</small></div>
+
+      <button class="charge-btn" id="chargeBtn">
+        <span class="ci">💎</span>
+        <span class="ct">스타픽 충전하기<small>결제로 스타픽을 바로 받아요</small></span>
+        <span class="cgo">충전 →</span>
+      </button>
+
+      <button class="charge-btn" id="convertBtn" style="margin-top:10px">
+        <span class="ci">🔄</span>
+        <span class="ct">하트픽 → 스타픽 전환<small>모은 하트픽으로 투표할 스타픽 만들기</small></span>
+        <span class="cgo">전환 →</span>
+      </button>
+
+      <div class="card">
+        <div class="card-h">
+          <div class="card-ic">📅</div>
+          <div><div class="card-t">출석체크</div><div class="card-d">매일 출석하고 하트픽을 받아요</div></div>
+          <div class="reward">💗+1</div>
+        </div>
+        <button class="cta" id="attBtn">오늘 출석하고 하트픽 1개 받기</button>
+      </div>
+
+      <div class="card">
+        <div class="card-h">
+          <div class="card-ic">📺</div>
+          <div><div class="card-t">광고 보고 하트픽 받기</div><div class="card-d">영상 광고를 끝까지 보면 적립</div></div>
+          <div class="reward">💗+5</div>
+        </div>
+        <button class="cta" id="adEarnBtn">광고 보고 하트픽 5개 받기</button>
+      </div>
+
+      <div class="card">
+        <div class="card-h">
+          <div class="card-ic">💌</div>
+          <div><div class="card-t">친구 초대하고 스타픽 받기</div><div class="card-d">친구가 첫 투표를 하면 둘 다 받아요</div></div>
+          <div class="reward" id="inviteReward">⭐+5</div>
+        </div>
+        <div class="invite-box">
+          <div class="invite-code" id="myInviteCode">로그인하면 코드가 생겨요</div>
+          <button class="mini-save" id="copyInvite">복사</button>
+        </div>
+        <button class="cta" id="inviteBtn">초대 링크 공유하기</button>
+        <button class="cta ghost" id="enterInviteBtn">받은 초대 코드 입력하기</button>
+        <div class="inv-stat" id="inviteStat"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-h">
+          <div class="card-ic">🔗</div>
+          <div><div class="card-t">투표 공유하고 하트픽 받기</div><div class="card-d">최애 투표를 SNS에 공유하면 적립</div></div>
+          <div class="reward" id="shareReward">💗+10</div>
+        </div>
+        <button class="cta" id="shareEarnBtn">공유하고 하트픽 10개 받기</button>
+        <div class="inv-stat" id="shareStat"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-h">
+          <div class="card-ic">🎁</div>
+          <div><div class="card-t">미션하고 스타픽 받기</div><div class="card-d">앱 설치·쇼핑·가입으로 스타픽 충전</div></div>
+        </div>
+        <div style="margin-top:6px">
+          <div class="mission" data-m="앱 설치"><div class="mi">📲</div><div class="mt">앱 설치하고 픽 받기<small>추천 앱 설치 후 실행</small></div><div class="mr">곧 오픈</div></div>
+          <div class="mission" data-m="쇼핑 적립"><div class="mi">🛍️</div><div class="mt">쇼핑하고 픽 받기<small>제휴몰에서 구매 시 적립</small></div><div class="mr">곧 오픈</div></div>
+          <div class="mission" data-m="회원가입"><div class="mi">✍️</div><div class="mt">가입하고 픽 받기<small>제휴 서비스 무료 가입</small></div><div class="mr">곧 오픈</div></div>
+        </div>
+        <p class="note">＊ 이 영역은 ‘오퍼월’ 광고로 채워져요. 앱 출시 후 애드팝콘·버즈빌 같은 오퍼월 서비스를 연동하면 실제 미션과 보상이 들어옵니다. (지금은 자리만 잡아둔 상태예요)</p>
+      </div>
+    </section>
+
+    <!-- ===== 내정보 ===== -->
+    <section class="screen" id="sc-me">
+      <div class="sc-title">내정보<small>계정과 픽을 관리하세요</small></div>
+
+      <div class="card soft">
+        <div class="card-h">
+          <div class="card-ic">🐤</div>
+          <div><div class="card-t" id="meHello">게스트 님</div><div class="card-d" id="meLogin">둘러보는 중 · 로그인하면 응원할 수 있어요</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="inforow"><div class="il">닉네임</div>
+          <input class="nick-input" id="nickInput" value="게스트" maxlength="12" />
+          <button class="mini-save" id="nickSave">저장</button>
+        </div>
+        <div class="inforow"><div class="il">보유 픽</div><div class="iv" id="mePick" style="color:var(--pink-deep);font-family:'Black Han Sans'">⭐ 0 · 💗 0</div></div>
+        <div class="inforow"><div class="il">내 최애</div><div class="iv" id="meBias">아직 선택 안 함</div></div>
+        <div class="inforow"><div class="il">내 투표</div><div class="iv" id="meVotes">0표</div></div>
+      </div>
+
+      <div class="card">
+        <div class="menurow" id="menuAddIdol"><div class="mri">🔍</div><div class="mrt">내 가수 추가 · 정보 정정<small>찾는 가수가 없거나 틀린 정보가 있나요?</small></div><div class="mrgo">›</div></div>
+        <div class="menurow" id="menuAdSubmit"><div class="mri">🖼️</div><div class="mrt">광고 시안 접수<small>1위 생일 광고 시안을 보내주세요</small></div><div class="mrgo">›</div></div>
+        <div class="menurow" id="menuPhotoAdmin" style="display:none"><div class="mri">🛠</div><div class="mrt">관리자 · 팬 사진 승인<small>대기 중인 제출 사진 검토</small></div><div class="mrgo">›</div></div>
+        <div class="menurow" id="menuIdolAdmin" style="display:none"><div class="mri">🎤</div><div class="mrt">관리자 · 아이돌 추가 승인<small>대기 중인 가수 추가 요청 검토</small></div><div class="mrgo">›</div></div>
+        <div class="menurow" id="menuStarAdmin" style="display:none"><div class="mri">⭐</div><div class="mrt">관리자 · 이달의 스타 신청 집계<small>다음달 후보 선정용 · 신청 많은 순</small></div><div class="mrgo">›</div></div>
+        <div class="menurow" id="menuSchedAdmin" style="display:none"><div class="mri">📅</div><div class="mrt">관리자 · 월별 운영 설정<small>본선·예선·광고월 · 스타 명단 · 오픈 여부</small></div><div class="mrgo">›</div></div>
+        <div class="menurow" id="menuGroupAdmin" style="display:none"><div class="mri">👥</div><div class="mrt">관리자 · 이달의 그룹 설정<small>이번 달 노출 그룹을 체크로 선택</small></div><div class="mrgo">›</div></div>
+      </div>
+
+      <button class="cta ghost" id="logoutBtn">로그아웃</button>
+      <button id="withdrawBtn" style="display:block;margin:14px auto 4px;background:none;border:none;color:var(--mute);font-size:12px;text-decoration:underline;cursor:pointer">회원 탈퇴</button>
+    </section>
+  </div>
+
+  <!-- bottom nav -->
+  <nav class="nav" id="nav">
+    <button data-sc="rank" class="on"><span class="navic"><svg viewBox="0 0 24 24"><path d="M5 21V9M12 21V4M19 21v-7"/></svg></span>랭킹</button>
+    <button data-sc="bias"><span class="navic"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/></svg></span>마이최애</button>
+    <button data-sc="earn"><span class="navic"><svg viewBox="0 0 24 24"><path d="M20 7H4v5h16V7zM12 7v13M12 7s-1.5-4-4-4-2 3 0 3.5M12 7s1.5-4 4-4 2 3 0 3.5M5 12v9h14v-9"/></svg></span>픽 모으기</button>
+    <button data-sc="me"><span class="navic"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/></svg></span>내정보</button>
+  </nav>
+
+  <!-- vote sheet -->
+  <div class="scrim" id="voteScrim"><div class="sheet" id="voteSheet"></div></div>
+
+  <!-- charge sheet -->
+  <div class="scrim" id="chargeScrim"><div class="sheet" id="chargeSheet"></div></div>
+
+  <!-- info sheet (가수 추가/정정 · 광고 시안 접수) -->
+  <div class="scrim" id="infoScrim"><div class="sheet isheet" id="infoSheet"></div></div>
+
+  <!-- ad modal -->
+  <div class="scrim center" id="adScrim">
+    <div class="ad-card">
+      <div class="tv">📺</div>
+      <h3 id="adTitle">광고 시청 중…</h3>
+      <p id="adSub">끝까지 보면 하트픽 5개가 적립돼요</p>
+      <div class="ad-prog"><i id="adFill"></i></div>
+      <div class="ad-count" id="adCount">3초</div>
+      <button class="ad-done" id="adDone">💗 하트픽 5개 받기</button>
+    </div>
+  </div>
+
+  <!-- login overlay -->
+  <div class="login" id="login">
+    <div class="ltag">내 최애의 특별한 날을<br>가장 특별하게 축하하는</div>
+    <div class="llogo">MYPICK!</div>
+    <div class="lsub">로그인하고 투표를 시작하세요 💗</div>
+    <div class="lbtns">
+      <button class="sso kakao" data-sso="카카오">💬 카카오로 시작하기</button>
+      <button class="sso google" data-sso="구글">Ｇ 구글로 시작하기</button>
+      <button class="sso email" id="emailToggle">✉️ 이메일로 시작하기</button>
+      <div class="email-form" id="emailForm">
+        <input id="emEmail" class="em-input" type="email" placeholder="이메일" autocomplete="username">
+        <input id="emPw" class="em-input" type="password" placeholder="비밀번호 (6자 이상)" autocomplete="current-password">
+        <button class="em-go" id="emGo">시작하기</button>
+        <div class="em-hint">처음 쓰는 이메일이면 자동으로 가입돼요</div>
       </div>
     </div>
-
-    <p class="hero-lead">매월 생일 투표로 최애를 1위에 올리고, 광고로 픽을 모아 응원하세요. 팬심이 모이면 전광판이 켜져요.</p>
-
-    <div class="dl reveal">
-      <div class="qr"><span><b>QR 준비 중</b>출시되면<br>여기로 다운로드</span></div>
-      <div class="badges">
-        <div class="badge"><span class="ic">▶️</span><span class="t"><small>곧 만나요</small><span>Google Play</span></span><span class="soon">출시 예정</span></div>
-        <div class="badge"><span class="ic">🍎</span><span class="t"><small>곧 만나요</small><span>App Store</span></span><span class="soon">준비 중</span></div>
-      </div>
-    </div>
+    <button class="browse" id="browseBtn">먼저 둘러볼게요 →</button>
+    <div class="lnote">로그인하면 픽·투표 기록이 안전하게 저장돼요.</div>
   </div>
-</header>
 
-<section class="feat">
-  <div class="wrap">
-    <div class="feat-grid">
-      <div class="card c1 reveal">
-        <div class="emo">🗳️</div>
-        <span class="num">01</span>
-        <h3>최애에게 투표</h3>
-        <p>나의 최애를 축하하기 위해 투표해보세요. 한 표 한 표가 응원이 돼요.</p>
-      </div>
-      <div class="card c2 reveal">
-        <div class="emo">🏆</div>
-        <span class="num">02</span>
-        <h3>전광판 광고 리워드</h3>
-        <p>매월 생일 투표 1위에게는 전광판 광고 리워드가 있어요. 팬심이 거리로 나가요.</p>
-      </div>
-      <div class="card c3 reveal">
-        <div class="emo">📺</div>
-        <span class="num">03</span>
-        <h3>광고 보고 픽 적립</h3>
-        <p>광고를 보고 픽을 받아 최애에게 투표할 수 있어요. 매일매일 응원해요.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="wrap">
-  <div class="closing reveal">
-    <h2>곧 만나요 💗</h2>
-    <p>내 최애의 생일, 마이픽에서 가장 빛나게.</p>
-  </div>
+  <div class="toast" id="toast"></div>
 </div>
 
-<footer>
-  <div class="foot-in">
-    <div class="foot-top">
-      <div class="foot-brand">MY PICK · 마이픽</div>
-      <div class="foot-links">
-        <a href="privacy-policy.html">개인정보처리방침</a>
-        <a href="terms-of-service.html">이용약관</a>
-        <a href="mailto:contact@mypick.info">문의하기</a>
-      </div>
-    </div>
-    <div class="biz">
-      상호: 봄날 <span class="sep">|</span> 대표자: 백승주 <span class="sep">|</span> 사업자등록번호: 765-09-02433<br>
-      통신판매업 신고번호: 2024-서울용산-1230 <span class="sep">|</span> 주소: 서울특별시 용산구 한강대로10길 11-18 1층<br>
-      이메일: contact@mypick.info
-    </div>
-    <div class="copy">© 2026 봄날 (MYPICK). All rights reserved.</div>
-  </div>
-</footer>
-
+<script src="roster.js"></script>
+<!-- Firebase: 투표 저장·실시간 집계 -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc, addDoc, updateDoc, deleteDoc, increment, onSnapshot, collection, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+  import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-storage.js";
+  import { getAuth, GoogleAuthProvider, OAuthProvider, signInWithPopup, signInWithCredential, signInWithCustomToken, signOut, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, deleteUser } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+  import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-functions.js";
+  const firebaseConfig = {
+    apiKey: "AIzaSyA0INqoWE6Ae1SOkMxc2UBcQm7v4bAyv-c",
+    authDomain: "mypick-d304e.firebaseapp.com",
+    projectId: "mypick-d304e",
+    storageBucket: "mypick-d304e.firebasestorage.app",
+    messagingSenderId: "178281594523",
+    appId: "1:178281594523:web:d6c493f81be0d90048103e",
+    measurementId: "G-N527NBSYT8"
+  };
+  try{
+    const app=initializeApp(firebaseConfig);
+    const db=getFirestore(app);
+    // 한 표 던지면 해당 가수 누적 득표를 +v (문서 없으면 생성)
+    window.fbVote=async(id,v)=>{ try{ await setDoc(doc(db,'tallies',id),{votes:increment(v)},{merge:true}); }catch(e){ console.error('투표 저장 실패',e); } };
+    // 모든 가수 득표를 실시간 구독 → 콜백에 {id:total} 전달
+    window.fbListen=(cb)=>{ onSnapshot(collection(db,'tallies'),s=>{const m={};s.forEach(d=>m[d.id]=(d.data().votes)||0);cb(m);},e=>console.error('실시간 수신 실패',e)); };
+    // 구글 로그인 — 앱에서는 네이티브 플러그인, 웹에서는 팝업
+    const auth=getAuth(app);
+    const gp=new GoogleAuthProvider();
+    const isApp = !!window.Capacitor;
+    const FA = ()=> (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.FirebaseAuthentication) || null;
+    window.fbGoogleLogin=async()=>{
+      if(isApp && FA()){
+        const res=await FA().signInWithGoogle();                 // 네이티브 구글 로그인 창
+        const idToken=res && res.credential && res.credential.idToken;
+        if(!idToken){ const e=new Error('no-idtoken'); e.friendly='구글 로그인 정보를 받지 못했어요'; throw e; }
+        await signInWithCredential(auth, GoogleAuthProvider.credential(idToken));  // JS SDK에 연결(파이어스토어용)
+      } else {
+        await signInWithPopup(auth, gp);
+      }
+    };
+    // 카카오 — 앱에서는 네이티브 카카오 SDK → Cloud Function → Firebase 커스텀 토큰
+    const functions = getFunctions(app, 'asia-northeast3');
+    const KL = ()=> (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.KakaoLoginPlugin) || null;
+    window.fbKakaoLogin=async()=>{
+      if(isApp && KL()){
+        const res=await KL().goLogin();                          // 네이티브 카카오 로그인
+        const accessToken=res && res.accessToken;
+        if(!accessToken){ const e=new Error('no-kakao-token'); e.friendly='카카오 로그인 정보를 받지 못했어요'; throw e; }
+        const out=await httpsCallable(functions,'kakaoLogin')({ accessToken });  // 서버: 카카오 토큰 → Firebase 토큰
+        const firebaseToken=out && out.data && out.data.firebaseToken;
+        if(!firebaseToken){ const e=new Error('no-fb-token'); e.friendly='로그인 처리에 실패했어요'; throw e; }
+        await signInWithCustomToken(auth, firebaseToken);         // Firebase 로그인 완료
+      } else {
+        const kp=new OAuthProvider('oidc.kakao'); await signInWithPopup(auth, kp);  // 웹은 OIDC 팝업
+      }
+    };
+    // 이메일: 로그인 시도 → 없으면 자동 가입 (간단형)
+    const errMsg=(c)=>({'auth/invalid-email':'이메일 형식이 올바르지 않아요','auth/weak-password':'비밀번호는 6자 이상이어야 해요','auth/missing-password':'비밀번호를 입력해주세요'}[c]||'다시 시도해주세요');
+    window.fbEmailAuth=async(email,pw)=>{
+      try{ return {user:(await signInWithEmailAndPassword(auth,email,pw)).user, mode:'login'}; }
+      catch(e1){
+        try{ return {user:(await createUserWithEmailAndPassword(auth,email,pw)).user, mode:'signup'}; }
+        catch(e2){
+          const err=new Error(e2.code);
+          err.friendly = e2.code==='auth/email-already-in-use' ? '비밀번호가 올바르지 않아요' : errMsg(e2.code);
+          throw err;
+        }
+      }
+    };
+    window.fbLogout=()=>signOut(auth);
+    // 회원 탈퇴: 개인정보(users 문서) 삭제 후 Auth 계정 삭제 시도
+    window.fbDeleteAccount=async()=>{
+      if(!currentUser) throw new Error('login-required');
+      const uid=currentUser.uid;
+      await deleteDoc(doc(db,'users',uid));   // 개인정보 삭제 (핵심)
+      try{ await deleteUser(currentUser); return {authDeleted:true}; }
+      catch(e){ console.warn('Auth 계정 삭제 보류(재로그인 필요) — 데이터는 삭제됨',e); try{await signOut(auth);}catch(_){} return {authDeleted:false}; }
+    };
+    let currentUser=null;
+    window.fbOnAuth=(cb)=>onAuthStateChanged(auth,u=>{currentUser=u;cb(u);});
+    // 픽 잔액: 계정(users/{uid})에 저장·복원
+    window.fbGetWallet=async()=>{ if(!currentUser)return null; try{ const s=await getDoc(doc(db,'users',currentUser.uid)); if(!s.exists())return null; const d=s.data(); return {heart:d.heart??0, star:d.star??0}; }catch(e){ console.error('지갑 불러오기 실패',e); return null; } };
+    window.fbSetWallet=(h,s)=>{ if(!currentUser)return; setDoc(doc(db,'users',currentUser.uid),{heart:h,star:s},{merge:true}).catch(e=>console.error('지갑 저장 실패',e)); };
+    // 팬 사진: Storage 업로드 + 승인 대기 기록
+    const storage=getStorage(app);
+    const ADMIN_EMAILS=['seungju613@gmail.com'];  // 이메일 주는 계정(구글)
+    const ADMIN_UIDS=['pSmg1wwamygIfkcPtMplbUtKV6X2'];  // 이메일 없는 계정(카카오) 관리자 UID
+    window.fbIsAdmin=()=> !!currentUser && (
+      ADMIN_EMAILS.includes((currentUser.email||'').toLowerCase())
+      || ADMIN_UIDS.includes(currentUser.uid)
+    );
+    window.fbUploadFanPhoto=async(idolId,file)=>{
+      if(!currentUser) throw new Error('login-required');
+      const r=storageRef(storage,`fan-photos/${idolId}/${Date.now()}_${currentUser.uid}.jpg`);
+      await uploadBytes(r,file);
+      const url=await getDownloadURL(r);
+      await addDoc(collection(db,'fanPhotos'),{idolId,url,uid:currentUser.uid,status:'pending',createdAt:serverTimestamp()});
+      return url;
+    };
+    window.fbGetApprovedPhotos=async(idolId)=>{   // idolId 단일 조건(복합 색인 불필요) → status는 코드에서 거름
+      const s=await getDocs(query(collection(db,'fanPhotos'),where('idolId','==',idolId)));
+      const out=[]; s.forEach(d=>{const v=d.data(); if(v.status==='approved')out.push({id:d.id,url:v.url});}); return out;
+    };
+    window.fbGetPendingPhotos=async()=>{
+      const s=await getDocs(query(collection(db,'fanPhotos'),where('status','==','pending')));
+      const out=[]; s.forEach(d=>out.push({id:d.id,...d.data()})); return out;
+    };
+    window.fbReviewPhoto=(docId,approve)=> updateDoc(doc(db,'fanPhotos',docId),{status:approve?'approved':'rejected'});
+    // ===== 아이돌 추가 요청 =====
+    window.fbRequestIdol=async(d)=>{
+      if(!currentUser) throw new Error('login-required');
+      await addDoc(collection(db,'idolRequests'),{
+        name:d.name, group:d.group, gender:d.gender,
+        birthMonth:d.birthMonth, birthDay:d.birthDay,
+        uid:currentUser.uid, status:'pending', createdAt:serverTimestamp()
+      });
+    };
+    window.fbGetApprovedIdols=async()=>{
+      const s=await getDocs(query(collection(db,'idolRequests'),where('status','==','approved')));
+      const out=[]; s.forEach(d=>out.push({id:d.id,...d.data()})); return out;
+    };
+    window.fbGetPendingIdols=async()=>{
+      const s=await getDocs(query(collection(db,'idolRequests'),where('status','==','pending')));
+      const out=[]; s.forEach(d=>out.push({id:d.id,...d.data()})); return out;
+    };
+    window.fbReviewIdol=(docId,approve,patch)=> updateDoc(doc(db,'idolRequests',docId), Object.assign({status:approve?'approved':'rejected'}, patch||{}));
+    // ===== 다음달 나의 스타 후보 신청 =====
+    function nomMonth(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); }
+    window.fbMyNominations=async()=>{
+      if(!currentUser)return [];
+      const s=await getDocs(query(collection(db,'starNominations'),where('uid','==',currentUser.uid),where('month','==',nomMonth())));
+      const out=[]; s.forEach(d=>out.push(d.data())); return out;
+    };
+    window.fbNominateStar=async(idolId,idolName)=>{
+      if(!currentUser) throw new Error('login-required');
+      const mine=await window.fbMyNominations();
+      if(mine.length>=3) throw new Error('limit');
+      if(mine.some(x=>x.idolId===idolId)) throw new Error('dup');
+      await addDoc(collection(db,'starNominations'),{ uid:currentUser.uid, idolId, idolName, month:nomMonth(), createdAt:serverTimestamp() });
+      return 3-mine.length-1;   // 남은 신청 수
+    };
+    // 관리자: 이번 달 신청 집계 (후보별 신청 수, 많은 순)
+    window.fbGetNominationTally=async()=>{
+      const s=await getDocs(query(collection(db,'starNominations'),where('month','==',nomMonth())));
+      const cnt={}, nm={};
+      s.forEach(d=>{ const x=d.data(); cnt[x.idolId]=(cnt[x.idolId]||0)+1; nm[x.idolId]=x.idolName; });
+      return Object.keys(cnt).map(id=>({idolId:id, name:nm[id], count:cnt[id]})).sort((a,b)=>b.count-a.count);
+    };
+    // 이달의 그룹: 이번 달 노출 그룹 목록 (config 문서)
+    window.fbGetMonthGroups=async()=>{
+      try{ const s=await getDoc(doc(db,'config','monthGroups')); return s.exists()?(s.data().ids||null):null; }
+      catch(e){ console.error('그룹 설정 불러오기 실패',e); return null; }
+    };
+    window.fbSetMonthGroups=(ids)=> setDoc(doc(db,'config','monthGroups'),{ids},{merge:true});
+    // 월별 운영 설정 (본선월/예선월/광고월/스타명단/그룹오픈/본선 임의선정) — 업데이트 없이 매달 교체
+    window.fbGetSchedule=async()=>{
+      try{ const s=await getDoc(doc(db,'config','schedule')); return s.exists()?s.data():null; }
+      catch(e){ console.error('일정 설정 불러오기 실패',e); return null; }
+    };
+    window.fbSetSchedule=(cfg)=> setDoc(doc(db,'config','schedule'),cfg,{merge:true});
+    // 보상값 설정 (공유·초대) — 앱 업데이트 없이 조정
+    window.fbGetRewards=async()=>{
+      try{ const s=await getDoc(doc(db,'config','rewards')); return s.exists()?s.data():null; }
+      catch(e){ return null; }
+    };
+    window.fbSetRewards=(cfg)=> setDoc(doc(db,'config','rewards'),cfg,{merge:true});
+    // 내 초대 코드·기록 불러오기
+    window.fbGetInvite=async()=>{
+      if(!currentUser) return null;
+      try{ const s=await getDoc(doc(db,'users',currentUser.uid)); const d=s.exists()?s.data():{};
+        return { code: d.inviteCode||null, invited: d.invitedCount||0, usedInvite: !!d.invitedBy, shareDay: d.shareDay||'', shareCount: d.shareCount||0 };
+      }catch(e){ return null; }
+    };
+    // 초대 코드 발급 (없으면 생성)
+    window.fbEnsureInviteCode=async()=>{
+      if(!currentUser) return null;
+      try{
+        const ref=doc(db,'users',currentUser.uid);
+        const s=await getDoc(ref);
+        let code=s.exists()?s.data().inviteCode:null;
+        if(!code){
+          code=currentUser.uid.slice(0,6).toUpperCase();
+          await setDoc(ref,{inviteCode:code},{merge:true});
+          await setDoc(doc(db,'inviteCodes',code),{uid:currentUser.uid},{merge:true});
+        }
+        return code;
+      }catch(e){ console.error('초대 코드 발급 실패',e); return null; }
+    };
+    // 초대 코드 입력 (초대받은 사람이 사용) → 양쪽에 보상
+    window.fbRedeemInvite=async(code)=>{
+      if(!currentUser) return {ok:false,msg:'로그인이 필요해요'};
+      code=(code||'').trim().toUpperCase();
+      if(!code) return {ok:false,msg:'초대 코드를 입력해주세요'};
+      try{
+        const me=doc(db,'users',currentUser.uid);
+        const ms=await getDoc(me);
+        const md=ms.exists()?ms.data():{};
+        if(md.invitedBy) return {ok:false,msg:'이미 초대 코드를 사용했어요'};
+        if(md.inviteCode===code) return {ok:false,msg:'본인 코드는 쓸 수 없어요'};
+        const cs=await getDoc(doc(db,'inviteCodes',code));
+        if(!cs.exists()) return {ok:false,msg:'없는 초대 코드예요'};
+        const hostUid=cs.data().uid;
+        if(hostUid===currentUser.uid) return {ok:false,msg:'본인 코드는 쓸 수 없어요'};
+        // 기록만 남김 — 보상은 첫 투표 때 지급 (어뷰징 방지)
+        await setDoc(me,{invitedBy:hostUid, inviteRewarded:false},{merge:true});
+        return {ok:true,msg:'초대 코드 등록 완료! 첫 투표를 하면 보상을 받아요 💗'};
+      }catch(e){ console.error(e); return {ok:false,msg:'처리에 실패했어요'}; }
+    };
+    // 첫 투표 시 초대 보상 지급 (초대한 사람 + 받은 사람)
+    window.fbClaimInviteReward=async(guestStars,hostStars,monthlyCap)=>{
+      if(!currentUser) return null;
+      try{
+        const me=doc(db,'users',currentUser.uid);
+        const ms=await getDoc(me); if(!ms.exists()) return null;
+        const md=ms.data();
+        if(!md.invitedBy || md.inviteRewarded) return null;   // 초대 없음 or 이미 받음
+        const hostRef=doc(db,'users',md.invitedBy);
+        const hs=await getDoc(hostRef);
+        if(hs.exists()){
+          const hd=hs.data();
+          const cnt=(hd.invitedCount||0);
+          if(cnt < monthlyCap){   // 상한 초과 시 초대자 보상 없음
+            await setDoc(hostRef,{ star:(hd.star||0)+hostStars, invitedCount:cnt+1 },{merge:true});
+          }
+        }
+        await setDoc(me,{inviteRewarded:true},{merge:true});
+        return {guestStars};   // 받은 사람 보상은 앱에서 지갑에 더함
+      }catch(e){ console.error('초대 보상 실패',e); return null; }
+    };
+    // 공유 보상 (하루 제한)
+    window.fbClaimShare=async(heartAmt,dailyLimit)=>{
+      if(!currentUser) return {ok:false,msg:'로그인이 필요해요'};
+      try{
+        const me=doc(db,'users',currentUser.uid);
+        const s=await getDoc(me); const d=s.exists()?s.data():{};
+        const today=new Date().toISOString().slice(0,10);
+        const cnt=(d.shareDay===today)?(d.shareCount||0):0;
+        if(cnt>=dailyLimit) return {ok:false,msg:`오늘 공유 보상은 다 받았어요 (하루 ${dailyLimit}회)`};
+        await setDoc(me,{shareDay:today, shareCount:cnt+1},{merge:true});
+        return {ok:true, heart:heartAmt, left:dailyLimit-(cnt+1)};
+      }catch(e){ console.error(e); return {ok:false,msg:'처리에 실패했어요'}; }
+    };
+    window.fbReady=true;
+    window.dispatchEvent(new Event('fb-ready'));
+    console.log('[MYPICK] Firebase 연결됨');
+  }catch(e){ console.error('Firebase 초기화 실패',e); }
+</script>
 <script>
-  // 스크롤 등장
-  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.15});
-  document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
+(function(){
+  "use strict";
+  const AD_HEART=5, ATT_HEART=1, AD_DAILY_LIMIT=20;   // 하트픽 획득: 광고 1회=5, 출석=1
+  // 공유·초대 보상 (Firebase config/rewards 에서 덮어씀 → 앱 업데이트 없이 조정)
+  let SHARE_HEART=10;        // 공유 1회 = 하트픽 10
+  let SHARE_DAILY_LIMIT=2;   // 하루 공유 보상 횟수
+  let INVITE_HOST_STAR=5;    // 초대한 사람 = 스타픽 5
+  let INVITE_GUEST_STAR=1;   // 초대받은 사람 = 스타픽 1
+  let INVITE_MONTHLY_CAP=20; // 초대 보상 상한 (어뷰징 방지)
+  const STAR_VOTE=100;      // 스타픽 1개 = 100표
+  const CONVERT_RATE=10;     // 하트픽 10개 → 스타픽 1개 (전환)
+  const reduce=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  /* ===== 가수 데이터: roster.js 의 ROSTER 사용, 없으면 아래 샘플로 동작 ===== */
+  const FALLBACK_ROSTER=[
+    {id:'s1',name:'차은성',group:'NOVA',gender:'male',birthMonth:9,birthDay:7,bio:'무대 위 카리스마, 팀의 메인보컬',photo:'',startVotes:3241880},
+    {id:'s2',name:'유시현',group:'NOVA',gender:'male',birthMonth:9,birthDay:14,bio:'다정한 리더, 작사 작곡까지',photo:'',startVotes:2980455},
+    {id:'s3',name:'강하루',group:'LUMINA',gender:'female',birthMonth:9,birthDay:9,bio:'청량한 비주얼 센터',photo:'',startVotes:2655120},
+    {id:'s4',name:'문재이',group:'ECLIPSE',gender:'female',birthMonth:9,birthDay:21,bio:'파워풀한 메인댄서',photo:'',startVotes:2210733},
+    {id:'s5',name:'한세빈',group:'LUMINA',gender:'male',birthMonth:9,birthDay:3,bio:'분위기 메이커 막내',photo:'',startVotes:1870201},
+    {id:'s6',name:'도이안',group:'ECLIPSE',gender:'female',birthMonth:9,birthDay:28,bio:'저음 매력의 래퍼',photo:'',startVotes:1402667},
+    {id:'o1',name:'백서진',group:'VELLO',gender:'female',birthMonth:10,birthDay:5,bio:'팀의 비주얼 에이스',photo:'',startVotes:2910300},
+    {id:'o2',name:'임도하',group:'NOVA',gender:'male',birthMonth:10,birthDay:19,bio:'안정적인 리드보컬',photo:'',startVotes:2540118},
+    {id:'o3',name:'윤가람',group:'LUMINA',gender:'male',birthMonth:10,birthDay:11,bio:'에너지 넘치는 댄서',photo:'',startVotes:2230900},
+    {id:'o4',name:'서온유',group:'VELLO',gender:'female',birthMonth:10,birthDay:2,bio:'섬세한 감성의 보컬',photo:'',startVotes:1990540},
+    {id:'o5',name:'노라엘',group:'ECLIPSE',gender:'female',birthMonth:10,birthDay:27,bio:'무대 장악력의 래퍼',photo:'',startVotes:1510222},
+    {id:'n1',name:'정시온',group:'ECLIPSE',gender:'male',birthMonth:11,birthDay:8,bio:'팀의 든든한 맏형',photo:'',startVotes:2700610},
+    {id:'n2',name:'오하진',group:'VELLO',gender:'male',birthMonth:11,birthDay:22,bio:'반전 매력의 메인댄서',photo:'',startVotes:2480330},
+    {id:'n3',name:'류세아',group:'LUMINA',gender:'female',birthMonth:11,birthDay:15,bio:'청아한 음색의 보컬',photo:'',startVotes:2120770},
+    {id:'n4',name:'권아린',group:'NOVA',gender:'female',birthMonth:11,birthDay:4,bio:'사랑스러운 비타민',photo:'',startVotes:1820005},
+    {id:'n5',name:'남도현',group:'VELLO',gender:'male',birthMonth:11,birthDay:30,bio:'시크한 비주얼 래퍼',photo:'',startVotes:1460880},
+  ];
+  const RAW=(window.ROSTER&&window.ROSTER.length)?window.ROSTER:FALLBACK_ROSTER;
+
+  const PALETTE=[['#ff4d8d','#ff8cc6'],['#a855f7','#ec4899'],['#06b6d4','#3b82f6'],['#f59e0b','#ef4444'],['#10b981','#14b8a6'],['#8b5cf6','#d946ef'],['#f43f5e','#fb7185'],['#6366f1','#8b5cf6'],['#0ea5e9','#22d3ee'],['#14b8a6','#06b6d4']];
+  function hash(s){let h=0;s=String(s);for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return h;}
+
+  // ===== 그룹 별칭 사전 (검색용) =====
+  // 한 줄씩 추가하면 검색에 바로 반영돼요. 예) "방탄소년단":["BTS"] → BTS로도 검색됨
+  // 그룹명이 영어로 저장된 곳엔 한글 별칭을, 한글로 저장된 곳엔 영어 별칭을 넣어주면 양방향 검색이 돼요.
+  const GROUP_ALIAS={
+    "방탄소년단":["BTS","방탄"], "BLACKPINK":["블랙핑크","블핑"], "TWICE":["트와이스"],
+    "aespa":["에스파"], "세븐틴":["SEVENTEEN","svt"], "엔하이픈":["ENHYPEN"],
+    "Stray Kids":["스트레이키즈","스키즈","skz"], "ITZY":["있지"], "IVE":["아이브"],
+    "NMIXX":["엔믹스"], "아이들":["여자아이들","gidle","idle"], "EXO":["엑소"],
+    "투모로우바이투게더":["TXT","투바투"], "마마무":["MAMAMOO"], "오마이걸":["OH MY GIRL","omg"],
+    "ATEEZ":["에이티즈"], "더보이즈":["THE BOYZ"], "슈퍼주니어":["SUPER JUNIOR","suju","슈주"],
+    "소녀시대":["SNSD","소시","girls generation"], "SHINee":["샤이니"], "동방신기":["TVXQ","동방"],
+    "아스트로":["ASTRO"], "몬스타엑스":["MONSTA X","몬엑"], "Apink":["에이핑크"],
+    "STAYC":["스테이씨"], "KISS OF LIFE":["키스오브라이프","kol"], "ILLIT":["아일릿"],
+    "RIIZE":["라이즈"], "TREASURE":["트레저"], "BABYMONSTER":["베이비몬스터","베몬"],
+    "Kep1er":["케플러"], "제로베이스원":["ZEROBASEONE","ZB1"], "Candy Shop":["캔디샵"],
+    "KATSEYE":["캣츠아이"], "&TEAM":["엔팀","앤팀"], "n.SSign":["엔싸인"],
+    "TEMPEST":["템페스트"], "VIVIZ":["비비지"], "tripleS":["트리플에스"],
+    "ALLDAY PROJECT":["올데이프로젝트"], "P1Harmony":["피원하모니","p1h"], "엔플라잉":["N.Flying"],
+    "원위":["ONEWE"], "루시":["LUCY"], "하이라이트":["Highlight","비스트","b2st"],
+    "god":["지오디"], "VERIVERY":["베리베리"], "CRAVITY":["크래비티"], "DRIPPIN":["드리핀"],
+    "xikers":["싸이커스"], "TNX":["티엔엑스"], "EVNNE":["이븐"], "BADVILLAIN":["배드빌런"],
+    "MEOVV":["미야오"], "QWER":["큐더블유이알"]
+    // ↑ 필요하면 여기에 계속 추가
+  };
+  const normTxt=s=>String(s).toLowerCase().replace(/\s/g,'');
+  function aliasFor(group){
+    let a=(GROUP_ALIAS[group]||[]).slice();
+    if(group.indexOf('NCT')>-1)a=a.concat(['엔시티','nct']);  // NCT 계열 한글 검색
+    return a;
+  }
+
+  // 명부 -> 작동용 STATE (가수 1명당 1개, 라운드는 생일월로 자동 분류)
+  const STATE={};
+  function makeIdolState(d,idOverride){
+    const id=idOverride||d.id||(d.name+'_'+d.group);
+    const group=d.group;
+    return {
+      id,name:d.name,group:group,gender:(d.gender==='male'?'male':'female'),
+      birthMonth:+d.birthMonth,birthDay:+d.birthDay,
+      bio:d.bio||'',photo:d.photo||'',
+      nm:d.name,gp:group,bday:(+d.birthMonth)+'월 '+(+d.birthDay)+'일',
+      votes:+(d.startVotes||0),c:PALETTE[hash(id)%PALETTE.length],
+      _blob:normTxt(d.name+group+aliasFor(group).join(''))
+    };
+  }
+  RAW.forEach(d=>{ const s=makeIdolState(d); STATE[s.id]=s; });
+
+  // 관리자 승인으로 추가된 아이돌을 STATE에 주입 (재빌드 없이 반영)
+  function injectApprovedIdol(d){
+    const id='req_'+d.id;                 // Firebase 문서 id 기반 (기존 명부와 충돌 방지)
+    if(STATE[id]) return false;
+    const s=makeIdolState({name:d.name,group:d.group,gender:d.gender,birthMonth:d.birthMonth,birthDay:d.birthDay},id);
+    s.votes = (typeof baseSeed==='function')?baseSeed(id):0;
+    STATE[id]=s; return true;
+  }
+  function loadApprovedIdols(){
+    if(!window.fbGetApprovedIdols) return;
+    window.fbGetApprovedIdols().then(list=>{
+      let added=0; list.forEach(d=>{ if(injectApprovedIdol(d))added++; });
+      if(added){ try{ computeFinalists(); buildTabs(); buildList(); }catch(e){} if(screen==='bias')buildBias(); }
+    }).catch(e=>console.error('승인 아이돌 로드 실패',e));
+  }
+
+  // 현재 열리는 라운드(월)와 각 라운드 일정. 월만 추가하면 라운드가 늘어나요.
+  // ===== 본선/예선 구조 =====
+  // 데모: 9·10월 = 본선(TOP 10) / 11월 = 예선(전원). 실제 출시 땐 오늘 날짜로 자동 계산.
+  // 규칙: 생일 X월 → 예선 (X-2)월 1~9일 / 본선 (X-2)월 10일~(X-1)월 15일 / 정산 (X-1)월 15일
+  // ===== 본선/예선 구조 =====
+  // 예선 = (생일월-2)월 15일~29일(월말) / 본선 = (생일월-1)월 1~15일 / 시안 = 16~25일 / 광고 = 생일월
+  // ⚙️ 아래 값들은 Firebase(config/schedule)에서 덮어써요 → 앱 업데이트 없이 매달 교체 가능
+  const FINAL_SLOTS=15;                      // 예선 → 본선 진출 인원
+  let OPEN_FINAL='9';     // 지금 본선 투표 진행중인 월
+  let OPEN_PRELIM='10';   // 지금 예선 투표 진행중인 월
+  let AD_MONTH='9';       // 이달의 스타/그룹 광고월
+  let GROUP_OPEN=false;   // 이달의 그룹 오픈 여부
+  let STAR_OPEN=true;     // 이달의 스타 오픈 여부
+  // 9월 본선 진출자 (관리자 임의 선정) — 이후 월은 예선 TOP15 자동
+  let HANDPICK_FINAL={
+    '9': ['anyujin_ive','jungkook_bts','sungho_bnd','rm_bts','yejun_plave','sungchan_riize','yeonjun_txt','han_skz','felix_skz','sanghyeon_ado','seungmin_skz','key_shinee','gaeul_ive','ej_andteam','tsuki_billlie','nayeon_twice','keeho_p1h','gyehun_kf','moonsua_billlie','jeongwoo_ahof']
+  };
+
+  const MONTH_LAST={1:31,2:28,3:31,4:30,5:31,6:30,7:31,8:31,9:30,10:31,11:30,12:31};
+  const prevM=(m,n)=>{ let v=((parseInt(m)-n-1)%12+12)%12+1; return v; };  // m보다 n달 전
+  const lastDay=m=>{ const y=new Date().getFullYear(); return (m===2 && (y%4===0&&(y%100!==0||y%400===0))) ? 29 : MONTH_LAST[m]; };
+  // 생일월(m)의 일정 자동 계산
+  function roundMeta(m){
+    m=parseInt(m);
+    const pm=prevM(m,2), fm=prevM(m,1);          // 예선월, 본선월
+    return {
+      prelim:`${pm}/15–${pm}/${lastDay(pm)-1>=29?29:lastDay(pm)}`,   // 15일~29일(2월은 28/29)
+      final :`${fm}/1–${fm}/15`,
+      submit:`${fm}/16–${fm}/25`,
+      ad    :`${m}월`,
+      openFinal :`${fm}월 1일`,
+      openPrelim:`${pm}월 15일`
+    };
+  }
+  // 스타/그룹 일정 (광고월 기준: 전달 1~22 투표 / 23~말일 시안)
+  function starMeta(adM){
+    const vm=prevM(parseInt(adM),1);
+    return { vote:`${vm}/1–${vm}/22`, submit:`${vm}/23–${vm}/${lastDay(vm)}`, ad:`${adM}월` };
+  }
+  // 본선/예선 탭에 보일 월 (진행월 + 다음 3개월)
+  function monthsFrom(start,n){ const a=[]; let m=parseInt(start); for(let i=0;i<n;i++){ a.push(String(m)); m=m%12+1; } return a; }
+  let FINAL_MONTHS=monthsFrom(OPEN_FINAL,4);
+  let PRELIM_MONTHS=monthsFrom(OPEN_PRELIM,3);
+  const ROUND_META=new Proxy({},{ get:(_,m)=> (typeof m==='string'&&/^\d+$/.test(m)) ? roundMeta(m) : undefined });
+
+  let heart=0, star=0, stage='final', active='9', screen='rank';
+  let myBias=null, pendingBias=null, biasSearching=false, biasPhoto=null, nickname='게스트', attClaimed=false;
+  const myVotes={};
+  const myStarVotes={};
+  const fanPhotos={};  // 팬 제출 사진 (데모: 메모리 보관) { idolId:[url,...] }
+
+  const $=s=>document.querySelector(s);
+  const $$=s=>Array.from(document.querySelectorAll(s));
+  const phoneEl=$('.phone'), balEl=$('#bal'), starValEl=$('#starVal'), heartValEl=$('#heartVal');
+  let rowEls=new Map();
+
+  const fmt=n=>n.toLocaleString();
+  const initial=n=>(n||'?').trim().charAt(0);
+  function idolsInRound(m){return Object.values(STATE).filter(d=>String(d.birthMonth)===String(m));}
+  const FINALISTS={};  // 본선 진출자 (9월=임의선정 / 그 외=예선 TOP15)
+  function computeFinalists(){
+    FINAL_MONTHS.forEach(m=>{
+      if(HANDPICK_FINAL[m]){ FINALISTS[m]=new Set(HANDPICK_FINAL[m]); return; }
+      const top=idolsInRound(m).slice().sort((a,b)=>b.votes-a.votes).slice(0,FINAL_SLOTS);
+      FINALISTS[m]=new Set(top.map(d=>d.id));
+    });
+  }
+  // 현재 보고 있는 월이 투표 오픈 상태인지 (아니면 '오픈 예정')
+  function isMonthOpen(){ return stage==='final' ? active===OPEN_FINAL : active===OPEN_PRELIM; }
+  function roundIdols(m){
+    const all=idolsInRound(m);
+    if(stage==='final'){const set=FINALISTS[m];return set?all.filter(d=>set.has(d.id)):all.slice(0,FINAL_SLOTS);}
+    return all;  // 예선 = 전원
+  }
+  function allIdols(){return Object.values(STATE);}
+
+  /* ===== 이달의 스타 (생일과 별도 집계) ===== */
+  // 개발용 고정 20명. 출시 땐 관리자가 지정한 명단으로 교체.
+  let STAR_IDS=[
+    // 9월 이달의 스타 (관리자 선정)
+    'jungkook_bts','suga_bts','jimin_bts','jin_bts',
+    'rio_ado','sangwon_ado','sanghyeon_ado','jihoon_solo',
+    'yejun_plave','eunho_plave','yeonjun_txt','ej_andteam',
+    'felix_skz','han_skz','sungchan_riize','wonbin_riize',
+    'seonghyeon_cortis','keonho_cortis','jaehyun_bnd','taesan_bnd'
+  ];
+  let starVotes={};
+  function starSeed(id){ return (typeof SEED_BASE!=='undefined'&&SEED_BASE) ? (5000+(hash(id+'_star')%45000)) : 0; }
+  function initStarVotes(){ STAR_IDS.forEach(id=>{ starVotes[id]=starSeed(id); }); }
+
+  /* ===== 이달의 그룹 (그룹 단위 · 별도 집계) ===== */
+  // 개발용 고정 16팀. 출시 후 관리자 화면에서 교체 예정.
+const GROUPS_RAW=[
+    ['grp_andteam','&TEAM','group_andteam'],
+    ['grp_2pm','2PM','group_2pm'],
+    ['grp_ab6ix','AB6IX','group_ab6ix'],
+    ['grp_ahof','AHOF','group_ahof'],
+    ['grp_allday','ALLDAY PROJECT','group_allday'],
+    ['grp_ado','ALPHA DRIVE ONE','group_ado'],
+    ['grp_artms','ARTMS','group_artms'],
+    ['grp_arrc','ARrC','group_arrc'],
+    ['grp_ateez','ATEEZ','group_ateez'],
+    ['grp_apink','Apink','group_apink'],
+    ['grp_axmxp','AxMxP','group_axmxp'],
+    ['grp_bm','BABYMONSTER','group_bm'],
+    ['grp_bv','BADVILLAIN','group_bv'],
+    ['grp_bp','BLACKPINK','group_bp'],
+    ['grp_billlie','Billlie','group_billlie'],
+    ['grp_cortis','CORTIS','group_cortis'],
+    ['grp_cravity','CRAVITY','group_cravity'],
+    ['grp_cs','Candy Shop','group_cs'],
+    ['grp_dd','DAILY:DIRECTION','group_dd'],
+    ['grp_day6','DAY6','group_day6'],
+    ['grp_drippin','DRIPPIN','group_drippin'],
+    ['grp_evnne','EVNNE','group_evnne'],
+    ['grp_exo','EXO','group_exo'],
+    ['grp_fb','FANTASY BOYS','group_fb'],
+    ['grp_ff','FIFTY FIFTY','group_ff'],
+    ['grp_got7','GOT7','group_got7'],
+    ['grp_idid','IDID','group_idid'],
+    ['grp_idntt','IDNTT','group_idntt'],
+    ['grp_illit','ILLIT','group_illit'],
+    ['grp_itzy','ITZY','group_itzy'],
+    ['grp_ive','IVE','group_ive'],
+    ['grp_katseye','KATSEYE','group_katseye'],
+    ['grp_kol','KISS OF LIFE','group_kol'],
+    ['grp_kep1er','Kep1er','group_kep1er'],
+    ['grp_kf','KickFlip','group_kf'],
+    ['grp_kiiikiii','KiiiKiii','group_kiiikiii'],
+    ['grp_meovv','MEOVV','group_meovv'],
+    ['grp_nct','NCT (통합)','group_nct'],
+    ['grp_nct127','NCT 127','group_nct127'],
+    ['grp_nctdream','NCT DREAM','group_nctdream'],
+    ['grp_wish','NCT WISH','group_wish'],
+    ['grp_nmixx','NMIXX','group_nmixx'],
+    ['grp_oy','ODD YOUTH','group_oy'],
+    ['grp_p1h','P1Harmony','group_p1h'],
+    ['grp_qwer','QWER','group_qwer'],
+    ['grp_riize','RIIZE','group_riize'],
+    ['grp_shinee','SHINee','group_shinee'],
+    ['grp_stayc','STAYC','group_stayc'],
+    ['grp_skz','Stray Kids','group_skz'],
+    ['grp_tempest','TEMPEST','group_tempest'],
+    ['grp_ssyn','THE SSYNDROME','group_ssyn'],
+    ['grp_tnx','TNX','group_tnx'],
+    ['grp_tre','TREASURE','group_tre'],
+    ['grp_tunexx','TUNEXX','group_tunexx'],
+    ['grp_twice','TWICE','group_twice'],
+    ['grp_unchild','UNCHILD','group_unchild'],
+    ['grp_unis','UNIS','group_unis'],
+    ['grp_vvv','VERIVERY','group_vvv'],
+    ['grp_viviz','VIVIZ','group_viviz'],
+    ['grp_winner','WINNER','group_winner'],
+    ['grp_wayv','WayV','group_wayv'],
+    ['grp_xh','Xdinary Heroes','group_xh'],
+    ['grp_yp','YOUNG POSSE','group_yp'],
+    ['grp_aespa','aespa','group_aespa'],
+    ['grp_god','god','group_god'],
+    ['grp_izna','izna','group_izna'],
+    ['grp_nssign','n.SSign','group_nssign'],
+    ['grp_xikers','xikers','group_xikers'],
+    ['grp_njz','뉴진스','group_njz'],
+    ['grp_dkb','다크비','group_dkb'],
+    ['grp_tbz','더보이즈','group_tbz'],
+    ['grp_wind','더윈드','group_wind'],
+    ['grp_tvxq','동방신기','group_tvxq'],
+    ['grp_lucy','루시','group_lucy'],
+    ['grp_lsf','르세라핌','group_lsf'],
+    ['grp_mamamoo','마마무','group_mamamoo'],
+    ['grp_mx','몬스타엑스','group_mx'],
+    ['grp_bts','방탄소년단','group_bts'],
+    ['grp_bdc','베이비돈크라이','group_bdc'],
+    ['grp_bnd','보이넥스트도어','group_bnd'],
+    ['grp_bbg','브브걸','group_bbg'],
+    ['grp_bigbang','빅뱅','group_bigbang'],
+    ['grp_svt','세븐틴','group_svt'],
+    ['grp_snsd','소녀시대','group_snsd'],
+    ['grp_suju','슈퍼주니어','group_suju'],
+    ['grp_astro','아스트로','group_astro'],
+    ['grp_gidle','아이들','group_gidle'],
+    ['grp_amp','앰퍼샌드원','group_amp'],
+    ['grp_nflying','엔플라잉','group_nflying'],
+    ['grp_enha','엔하이픈','group_enha'],
+    ['grp_omg','오마이걸','group_omg'],
+    ['grp_onf','온앤오프','group_onf'],
+    ['grp_onewe','원위','group_onewe'],
+    ['grp_zb1','제로베이스원','group_zb1'],
+    ['grp_txt','투모로우바이투게더','group_txt'],
+    ['grp_tws','투어스','group_tws'],
+    ['grp_sss','트리플에스','group_sss'],
+    ['grp_forestella','포레스텔라','group_forestella'],
+    ['grp_plave','플레이브','group_plave'],
+    ['grp_highlight','하이라이트','group_highlight'],
+  ];
+  // 이번 달 기본 노출(관리자가 안 고른 초기 상태). 관리자 화면에서 교체.
+  const DEFAULT_GROUP_IDS=['grp_bts','grp_wish','grp_svt','grp_enha','grp_tws','grp_txt','grp_riize','grp_skz','grp_cortis','grp_bnd','grp_ive','grp_nct127','grp_shinee','grp_ateez','grp_p1h','grp_ado'];
+  const GROUPS=GROUPS_RAW.map(([id,nm,f])=>({id,nm,gp:'',photo:'images/'+f+'.jpg',c:PALETTE[hash(id)%PALETTE.length]}));
+  const GROUP_BY_ID={}; GROUPS.forEach(g=>GROUP_BY_ID[g.id]=g);
+  let activeGroupIds=DEFAULT_GROUP_IDS.slice();   // 이번 달 노출 그룹 (관리자가 교체)
+  // GROUP_OPEN은 상단에서 let으로 선언 (Firebase에서 덮어씀)
+  let groupVotes={}, myGroupVotes={};
+  function groupSeed(id){ return (typeof SEED_BASE!=='undefined'&&SEED_BASE)?(5000+(hash(id+'_grp')%45000)):0; }
+  function initGroupVotes(){ GROUPS.forEach(g=>groupVotes[g.id]=groupSeed(g.id)); }
+  function groupRanked(){ return activeGroupIds.filter(id=>GROUP_BY_ID[id]).map(id=>({d:GROUP_BY_ID[id],v:groupVotes[id]||0})).sort((a,b)=>b.v-a.v); }
+  function buildGroupList(){
+    const listEl=$('#groupList'); if(!listEl)return; listEl.innerHTML='';
+    buildStarGroupHead('group');
+    const ranked=groupRanked();
+    const lead=ranked[0];
+    const tag=$('#groupTag'); if(tag){ tag.innerHTML = lead ? `🎁 이대로면 <b>${lead.d.nm}</b>가 ${AD_MONTH}월의 전광판 광고 주인공! <button class="reward-btn">리워드 확인 ›</button>` : `👥 이달의 그룹 · 응원해보세요`; const b=tag.querySelector('.reward-btn'); if(b)b.onclick=()=>openReward('group'); }
+    ranked.forEach((it,i)=>{
+      const d=it.d, a=avatarBG(d);
+      const row=document.createElement('div');row.className='row'+(i===0?' top':'');row.dataset.id=d.id;
+      const mv=myGroupVotes[d.id];
+      row.innerHTML=`<div class="rank">${i+1}</div><div class="avatar" style="${a.bg}">${a.txt}</div>
+        <div class="who"><div class="nm">${d.nm}${i===0?'<span class="crown">👑</span>':''}</div><div class="mine" ${mv?'':'style="display:none"'}>${mv?'내가 준 표 '+fmt(mv):''}</div></div>
+        <div class="votes"><span class="n">${fmt(it.v)}</span> <span class="u">표</span></div>
+        <button class="heart-btn">💗 응원</button>`;
+      row.querySelector('.heart-btn').onclick=()=>openVote(d.id,'group');
+      listEl.appendChild(row);
+    });
+  }
+  function starRanked(){ return STAR_IDS.filter(id=>STATE[id]).map(id=>({d:STATE[id],v:starVotes[id]||0})).sort((a,b)=>b.v-a.v); }
+  // 스타/그룹 라운드 일정 표시
+  function buildStarGroupHead(kind){
+    const el=$(kind==='star'?'#starRoundHead':'#groupRoundHead'); if(!el)return;
+    const s=starMeta(AD_MONTH);
+    const open=(kind==='star')?STAR_OPEN:GROUP_OPEN;
+    const label=kind==='star'?'이달의 스타':'이달의 그룹';
+    const phases=[['투표',s.vote,open],['시안 접수',s.submit,false],['전광판 광고',s.ad,false]];
+    const tl=phases.map((p,i)=>`<div class="ph ${p[2]?'on':''}"><span class="t">${p[0]}</span><span class="d">${p[1]}</span></div>${i<phases.length-1?'<span class="ph-ar">→</span>':''}`).join('');
+    const chip=open?`<span class="chip live">● 투표 진행중</span>`:`<span class="chip">🔜 오픈 예정</span>`;
+    el.innerHTML=`<div class="rh-cap">📅 ${AD_MONTH}월 ${label} 일정</div><div class="rh-note">※ 투표 집계·광고 일정상 아래 일정은 변경될 수 있습니다.</div><div class="status-row">${chip}<span style="font-size:11px;color:var(--mute)">${AD_MONTH}월 전광판 광고 주인공</span></div><div class="timeline">${tl}</div>`;
+  }
+  function buildStarList(){
+    const listEl=$('#starList'); if(!listEl)return; listEl.innerHTML='';
+    buildStarGroupHead('star');
+    const ranked=starRanked();
+    const lead=ranked[0];
+    const tag=$('#starTag'); if(tag){ tag.innerHTML = lead ? `🎁 이대로면 <b>${lead.d.nm}</b>님이 ${AD_MONTH}월의 전광판 광고 주인공! <button class="reward-btn">리워드 확인 ›</button>` : `⭐ 이달의 스타 · 후보를 응원해보세요`; const b=tag.querySelector('.reward-btn'); if(b)b.onclick=()=>openReward('star'); }
+    ranked.forEach((it,i)=>{
+      const d=it.d, a=avatarBG(d);
+      const row=document.createElement('div');row.className='row'+(i===0?' top':'');row.dataset.id=d.id;
+      const mv=myStarVotes[d.id];
+      row.innerHTML=`<div class="rank">${i+1}</div><div class="avatar" style="${a.bg}">${a.txt}</div>
+        <div class="who"><div class="nm">${d.nm}${i===0?'<span class="crown">👑</span>':''}</div><div class="gp">${d.gp}</div><div class="mine" ${mv?'':'style="display:none"'}>${mv?'내가 준 표 '+fmt(mv):''}</div></div>
+        <div class="votes"><span class="n">${fmt(it.v)}</span> <span class="u">표</span></div>
+        <button class="heart-btn">💗 응원</button>`;
+      row.querySelector('.heart-btn').onclick=()=>openVote(d.id,'star');
+      listEl.appendChild(row);
+    });
+  }
+  function findIdol(id){return STATE[id]?{idol:STATE[id],round:String(STATE[id].birthMonth)}:null;}
+  // 최애 공유: mypick.info/vote.html?idol=ID 로 링크 생성 → 네이티브 공유 or 복사
+  function shareIdol(id){
+    const f=findIdol(id); if(!f)return; const d=f.idol;
+    const url='https://mypick.info/vote.html?idol='+encodeURIComponent(id);
+    const text=`${d.nm} 생일 투표 함께해요! 💗 마이픽에서 응원하기`;
+    if(navigator.share){ navigator.share({title:'마이픽 · '+d.nm, text, url}).catch(()=>{}); }
+    else if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(url).then(()=>toast('공유 링크를 복사했어요 💗')).catch(()=>toast(url)); }
+    else { toast(url); }
+  }
+  function rankOf(id){const d=STATE[id];if(!d)return '-';const s=idolsInRound(d.birthMonth).sort((a,b)=>b.votes-a.votes);return (s.findIndex(x=>x.id===id)+1)+'위';}
+  function avatarBG(d){
+    const grad=`background:linear-gradient(135deg,${d.c[0]},${d.c[1]})`;
+    const src=d.photo||'';
+    const img=src?`<img class="ava-img" src="${src}" alt="" loading="lazy" onerror="this.remove()">`:'';
+    return{bg:grad,txt:initial(d.nm)+img};
+  }
+
+  let balTimer=null, walletReady=false;
+  function persistWallet(){ if(!walletReady||!window.fbSetWallet)return; clearTimeout(balTimer); balTimer=setTimeout(()=>window.fbSetWallet(heart,star),400); }
+  function renderBalance(){ starValEl.textContent=fmt(star); heartValEl.textContent=fmt(heart); const mp=$('#mePick'); if(mp)mp.textContent='⭐ '+fmt(star)+' · 💗 '+fmt(heart); persistWallet(); }
+
+  /* ---------- 랭킹 ---------- */
+  function buildStageTabs(){
+    const s=$('#stageTabs');s.innerHTML='';
+    [['final','🏆 본선','전광판 광고 주인공','big'],['prelim','⚔️ 예선',`TOP ${FINAL_SLOTS}을 향한 경쟁!`,'slim']].forEach(([k,t,sub,sz])=>{
+      const b=document.createElement('button');
+      b.className='stage-tab '+sz+(k===stage?' on':'');
+      b.innerHTML=`<span class="st-t">${t}</span><span class="st-s">${sub}</span>`;
+      b.onclick=()=>{stage=k;active=(stage==='final'?FINAL_MONTHS:PRELIM_MONTHS)[0];buildStageTabs();buildTabs();buildRoundHead();buildList();};
+      s.appendChild(b);
+    });
+  }
+  function buildTabs(){
+    const months=stage==='final'?FINAL_MONTHS:PRELIM_MONTHS;
+    const t=$('#tabs');t.innerHTML='';
+    months.forEach(k=>{
+      const b=document.createElement('button');
+      b.className='tab'+(k===active?' active':'');
+      b.innerHTML=`${k}월<span class="sub">${stage==='final'?'본선':'예선'}</span>`;
+      b.onclick=()=>{active=k;buildTabs();buildRoundHead();buildList();};
+      t.appendChild(b);
+    });
+  }
+  function buildRoundHead(){
+    const r=ROUND_META[active];if(!r)return;
+    const isFinal=stage==='final';
+    const open=isMonthOpen();
+    const phases=[['예선',r.prelim,!isFinal&&open],['본선',r.final,isFinal&&open],['시안 접수',r.submit,false],['생일 광고',r.ad,false]];
+    const tl=phases.map((p,i)=>`<div class="ph ${p[2]?'on':''}"><span class="t">${p[0]}</span><span class="d">${p[1]}</span></div>${i<phases.length-1?'<span class="ph-ar">→</span>':''}`).join('');
+    const openDate=isFinal?r.openFinal:r.openPrelim;
+    const statusChip = open
+      ? `<span class="chip live">● ${isFinal?'본선 진행중':'예선 진행중'}</span>`
+      : `<span class="chip">🔜 ${openDate?openDate+' 오픈 예정':'오픈 예정'}</span>`;
+    const subLabel = isFinal ? `${active}월 생일 · 전광판 광고 주인공` : `${active}월 생일 · TOP ${FINAL_SLOTS} 진출 경쟁`;
+    $('#roundHead').innerHTML=`<div class="rh-cap">📅 ${active}월 라운드 일정</div><div class="rh-note">※ 투표 집계·광고 일정상 아래 일정은 변경될 수 있습니다.</div><div class="status-row">${statusChip}<span style="font-size:11px;color:var(--mute)">${subLabel}</span></div><div class="timeline">${tl}</div>`;
+  }
+  function buildGenderToggle(){ const g=$('#gtoggle'); if(g)g.style.display='none'; }
+  function buildList(){
+    const listEl=$('#list');listEl.innerHTML='';rowEls=new Map();
+    if(!isMonthOpen()){
+      const r=ROUND_META[active]||{};
+      const openDate=stage==='final'?r.openFinal:r.openPrelim;
+      const lbl=stage==='final'?'본선':'예선';
+      $('#prizeTag').innerHTML=`🔜 ${active}월 ${lbl}은 ${openDate?openDate+' 오픈 예정':'오픈 예정'}이에요`;
+      listEl.innerHTML=`<div class="pod-soon" style="margin:22px 2px;line-height:1.7">${active}월 ${lbl} 투표는<br>${openDate?'<b>'+openDate+'</b>에 열려요 🔜':'곧 열려요 🔜'}</div>`;
+      return;
+    }
+    const arr=roundIdols(active);
+    if(arr.length===0){
+      $('#prizeTag').innerHTML=`🗒️ ${active}월 ${stage==='final'?'본선':'예선'}에 가수가 없어요 · 명부에 추가하면 자동으로 채워져요.`;
+      return;
+    }
+    arr.forEach(d=>{
+      const row=document.createElement('div');row.className='row';row.dataset.id=d.id;
+      const a=avatarBG(d);
+      row.innerHTML=`<div class="rank"></div><div class="avatar" style="${a.bg}">${a.txt}</div>
+        <div class="who"><div class="nm">${d.nm}<span class="crown">👑</span></div><div class="gp">${d.gp}</div><div class="mine"></div></div>
+        <div class="votes"><span class="n">${fmt(d.votes)}</span> <span class="u">표</span></div>
+        <button class="heart-btn">💗 응원</button>`;
+      row.querySelector('.heart-btn').onclick=()=>openVote(d.id);
+      const mv=myVotes[d.id];if(mv){const m=row.querySelector('.mine');m.style.display='block';m.textContent='내가 준 표 '+fmt(mv);}
+      listEl.appendChild(row);rowEls.set(d.id,row);
+    });
+    reorder(true);
+  }
+  function reorder(instant){
+    const listEl=$('#list');
+    const sortedAll=[...roundIdols(active)].sort((a,b)=>b.votes-a.votes);
+    if(sortedAll.length===0)return;
+    const firsts=new Map();
+    if(!instant&&!reduce)rowEls.forEach((el,id)=>firsts.set(id,el.getBoundingClientRect().top));
+    sortedAll.forEach(d=>listEl.appendChild(rowEls.get(d.id)));
+    sortedAll.forEach((d,i)=>{const el=rowEls.get(d.id);el.querySelector('.rank').textContent=i+1;el.classList.toggle('top',i===0);el.classList.toggle('adv',stage==='prelim'&&i<FINAL_SLOTS);});
+    const lead=sortedAll[0];
+    if(stage==='final'){ $('#prizeTag').innerHTML=`🎁 이대로면 <b>${lead.nm}</b>님이 ${active}월의 전광판 광고 주인공! <button class="reward-btn">리워드 확인 ›</button>`; const b=$('#prizeTag').querySelector('.reward-btn'); if(b)b.onclick=()=>openReward('birthday'); }
+    else $('#prizeTag').innerHTML=`⚔️ ${active}월 예선 · <b>TOP ${FINAL_SLOTS}</b>을 향한 경쟁!`;
+    if(instant||reduce)return;
+    rowEls.forEach((el,id)=>{const dy=(firsts.get(id)||0)-el.getBoundingClientRect().top;if(!dy)return;el.style.transform=`translateY(${dy}px)`;el.style.transition='none';requestAnimationFrame(()=>{el.style.transition='transform .42s cubic-bezier(.2,.8,.2,1)';el.style.transform='';});});
+  }
+  function bumpNum(id,gold){const el=rowEls.get(id);if(!el)return;el.querySelector('.votes .n').textContent=fmt(findIdol(id).idol.votes);if(gold){const n=el.querySelector('.votes .n');n.classList.remove('tick');void n.offsetWidth;n.classList.add('tick');}}
+
+  /* ---------- 응원(투표) 시트 ---------- */
+  const voteScrim=$('#voteScrim');
+  /* ===== 리워드(전광판 광고) 소개 ===== */
+  const CUR_MONTH=(new Date().getMonth()+1);
+  // AD_MONTH는 상단에서 let으로 선언 (Firebase에서 덮어씀)
+  const REWARDS={
+    birthday:{
+      title:'🎂 생일 전광판 광고',
+      place:'용산 아이파크몰 미디어월',
+      imgs:['reward_ipark1','reward_ipark2','reward_ipark3'],
+      desc:'용산역 1·2번 출구 바로 옆, 아이파크몰 3층 메인 연결통로에 자리한 대형 미디어월이에요. 늘 사람들로 붐비는 길목에서 보행자 눈높이 그대로, 최첨단 화질로 최애의 특별한 날을 축하해요. 오가는 모든 사람의 시선이 닿는 자리에서 최애가 가장 환하게 빛나는 순간을 만들어드려요. 💗',
+      specs:'✓ 위치 : 용산역 1·2번 출구 옆 · 아이파크몰 3층 연결통로<br>✓ 노출 : <b>7일간</b> · 매일 06시~24시 · 20초 기준 1일 100회 이상<br>✓ 지원 포맷 : mp4'
+    },
+    star:{
+      title:'⭐ 이달의 스타 전광판 광고',
+      place:'강남대로 HM타워 전광판',
+      imgs:['reward_gangnam1','reward_gangnam2'],
+      desc:'논현역과 신논현역 사이, 강남대로 교보타워 사거리를 지키는 대형 전광판이에요. 강남 한복판의 엄청난 유동인구 속, 가장 인지도 높은 자리에서 최애를 만날 수 있어요. 수많은 사람들의 시선이 머무는 그곳에서, 이달의 주인공인 최애를 마음껏 빛내주세요. 💗',
+      specs:'✓ 위치 : 논현역~신논현역 · 강남대로 교보타워 사거리<br>✓ 노출 : 매일 06시~24시 · 1일 100회 이상<br>✓ 지원 포맷 : mp4, jpg'
+    },
+    group:{
+      title:'👥 이달의 그룹 전광판 광고',
+      place:'홍대 스칼렛빌딩(탑라인타워) 전광판',
+      imgs:['reward_hongdae1','reward_hongdae2'],
+      desc:'홍대입구역 9번 출구, 한눈에 들어오는 빨간 건물 외벽의 전광판이에요. 예술의 거리이자 2030 젊은 층으로 늘 활기찬 홍대 한복판에서, 자연스럽게 모두의 시선이 모이는 자리죠. 가장 트렌디한 거리 위에서 우리 그룹의 화력을 마음껏 보여주세요. 💗',
+      specs:'✓ 위치 : 홍대입구역 9번 출구 · 스칼렛빌딩(탑라인타워)<br>✓ 노출 : <b>3일간</b> · 매일 06시~24시 · 20초 기준 1일 100회 이상<br>✓ 지원 포맷 : mp4, jpg, psd'
+    }
+  };
+  function openReward(corner){
+    const r=REWARDS[corner]; if(!r)return;
+    const imgs=r.imgs.map(f=>`<img src="images/${f}.jpg" alt="" style="width:100%;border-radius:12px;margin-bottom:8px;display:block" loading="lazy" onerror="this.style.display='none'">`).join('');
+    openInfo(`<h3>${r.title}</h3>
+      <div class="reward-place">📍 ${r.place}</div>
+      <p style="line-height:1.8">${r.desc}</p>
+      <div style="margin:14px 0 10px">${imgs}</div>
+      <div class="reward-specs">${r.specs}</div>
+      <p style="font-size:11.5px;color:var(--mute);margin-top:12px;line-height:1.6">※ 광고 진행 상황에 따라 매체·기간은 변동될 수 있어요.</p>`);
+  }
+
+  function openVote(id, pool){
+    pool=pool||'birthday';
+    if(!isLoggedIn && window.fbOnAuth){ toast('로그인 후 참여할 수 있어요 💗'); setTimeout(showLogin,1000); return; }
+    const d = pool==='group' ? GROUP_BY_ID[id] : findIdol(id).idol;
+    if(!d)return;
+    if(star<=0){
+      $('#voteSheet').innerHTML=`<h3>${d.nm} 응원하기</h3>
+        <p>투표는 <b>스타픽</b>으로 해요 · 스타픽 1개 = ${fmt(STAR_VOTE)}표</p>
+        <p style="color:var(--mute);font-size:13px;line-height:1.6">보유한 스타픽이 없어요.<br>충전소에서 스타픽을 충전하거나, 하트픽을 전환하세요.</p>
+        <button class="cta" id="voteGoCharge">스타픽 충전하러 가기 →</button>
+        <button class="opt-close" id="voteClose">닫기</button>`;
+      $('#voteGoCharge').onclick=()=>{ closeVote(); openCharge(); };
+      $('#voteClose').onclick=closeVote; voteScrim.classList.add('show'); return;
+    }
+    $('#voteSheet').innerHTML=`<h3>${d.nm} 응원하기</h3>
+      <p>스타픽으로 투표해요 · 스타픽 1개 = ${fmt(STAR_VOTE)}표</p>
+      <div style="margin:16px 0 6px">
+        <input type="range" id="voteRange" min="1" max="${star}" value="1" step="1" style="width:100%">
+        <div style="text-align:center;margin-top:12px;font-size:16px">스타픽 <b><span id="voteStars">1</span></b>개 → <b style="color:var(--pink-deep)"><span id="voteVotes">${fmt(STAR_VOTE)}</span>표</b></div>
+        <div style="text-align:center;font-size:11.5px;color:var(--mute);margin-top:5px">보유 스타픽 ${fmt(star)}개 · 최대 ${fmt(star*STAR_VOTE)}표</div>
+      </div>
+      <button class="cta" id="voteGo">응원하기 💗</button>
+      <button class="opt-close" id="voteClose">닫기</button>`;
+    const range=$('#voteRange');
+    const upd=()=>{ const n=+range.value; $('#voteStars').textContent=fmt(n); $('#voteVotes').textContent=fmt(n*STAR_VOTE); };
+    range.oninput=upd; upd();
+    $('#voteGo').onclick=()=>applyVote(id,+range.value,pool);
+    $('#voteClose').onclick=closeVote;
+    voteScrim.classList.add('show');
+  }
+  function closeVote(){voteScrim.classList.remove('show');}
+  voteScrim.onclick=e=>{if(e.target===voteScrim)closeVote();};
+  // 첫 투표 시 초대 보상 지급 (어뷰징 방지: 실제 투표해야 지급)
+  async function tryInviteReward(){
+    if(!isLoggedIn||!window.fbClaimInviteReward) return;
+    try{
+      const r=await window.fbClaimInviteReward(INVITE_GUEST_STAR,INVITE_HOST_STAR,INVITE_MONTHLY_CAP);
+      if(r&&r.guestStars){
+        star+=r.guestStars; renderBalance();
+        if(window.fbSetWallet) window.fbSetWallet(heart,star);
+        toast(`💌 초대 보상 스타픽 ${r.guestStars}개 적립!`);
+        refreshInvite();
+      }
+    }catch(e){}
+  }
+  function applyVote(id,stars,pool){
+    pool=pool||'birthday';
+    if(star<stars){closeVote();lackFx();return;}
+    star-=stars;renderBalance();
+    tryInviteReward();   // 첫 투표면 초대 보상 지급
+    const votes=stars*STAR_VOTE;
+    const d = pool==='group' ? GROUP_BY_ID[id] : findIdol(id).idol;
+    if(pool==='group'){
+      if(window.fbVote) window.fbVote('group:'+id, votes);   // 이달의 그룹 = 별도 집계
+      groupVotes[id]=(groupVotes[id]||groupSeed(id))+votes;
+      myGroupVotes[id]=(myGroupVotes[id]||0)+votes;
+      closeVote();
+      if(rankView==='group') buildGroupList();
+      if(rankView==='hub') buildHubPodium();
+      updateMe();
+      toast(`👥 ${d.nm} 이달의 그룹 ${fmt(votes)}표 응원 완료!`);
+      return;
+    }
+    if(pool==='star'){
+      if(window.fbVote) window.fbVote('star:'+id, votes);   // 이달의 스타 = 별도 집계
+      starVotes[id]=(starVotes[id]||starSeed(id))+votes;
+      myStarVotes[id]=(myStarVotes[id]||0)+votes;
+      closeVote();
+      if(rankView==='star') buildStarList();
+      if(rankView==='hub') buildHubPodium();
+      updateMe();
+      toast(`⭐ ${d.nm} 이달의 스타 ${fmt(votes)}표 응원 완료!`);
+      return;
+    }
+    myVotes[id]=(myVotes[id]||0)+votes;
+    if(window.fbVote) window.fbVote(id,votes);   // 생일 = 기존 집계
+    d.votes+=votes;
+    closeVote();
+    if(screen==='rank' && rankView==='birthday'){
+      const row=rowEls.get(id);
+      if(row){const m=row.querySelector('.mine');m.style.display='block';m.textContent='내가 준 표 '+fmt(myVotes[id]);}
+      bumpNum(id,true);reorder(false);
+    }
+    updateMe();
+    toast(`💗 ${d.nm}에게 ${fmt(votes)}표 응원 완료!`);
+  }
+  function lackFx(){balEl.classList.remove('lack');void balEl.offsetWidth;balEl.classList.add('lack');toast('스타픽이 부족해요 — 충전하거나 하트픽을 전환하세요!');}
+
+  /* 실시간 다른 팬 투표 시뮬 (데모용) — 지금은 꺼둠. true로 바꾸면 다시 켜져요 */
+  const SIM_VOTES=false;
+  if(SIM_VOTES) setInterval(()=>{
+    if(screen!=='rank')return;
+    if($('#adScrim').classList.contains('show')||voteScrim.classList.contains('show'))return;
+    const arr=idolsInRound(active);if(arr.length===0)return;
+    const d=arr[Math.floor(Math.random()*arr.length)];
+    d.votes+=Math.floor(120+Math.random()*2600);bumpNum(d.id,false);reorder(false);
+  },reduce?4000:1600);
+
+  /* ---------- 마이최애 ---------- */
+  function buildBias(){
+    const b=$('#biasBody');
+    if(biasSearching || (!myBias && !pendingBias)){
+      b.innerHTML=`<div class="card soft"><div class="card-d" style="margin:0">최애를 <b>검색</b>해서 한 명을 선택하세요. 그룹명·가수명으로 찾을 수 있고, 한글·영문 둘 다 돼요. <b>(예: BTS·방탄소년단, BLACKPINK·블랙핑크)</b></div></div>
+        <input id="biasSearch" class="bias-search" placeholder="🔍 그룹 또는 가수 이름 검색" autocomplete="off">
+        <div class="pick-grid" id="biasResults"></div>
+        <div class="bias-hint" id="biasHint">검색어를 입력하면 결과가 떠요 💗<br>그룹을 검색하면 멤버 전체가 나와요.</div>`;
+      const input=$('#biasSearch'), res=$('#biasResults'), hint=$('#biasHint');
+      function run(){
+        const q=normTxt(input.value.trim());
+        if(!q){res.innerHTML='';hint.style.display='block';return;}
+        hint.style.display='none';
+        const hits=allIdols().filter(d=>d._blob.indexOf(q)>-1).slice(0,80);
+        if(!hits.length){res.innerHTML='<div class="bias-hint">검색 결과가 없어요. 철자를 바꿔보거나, ‘내정보 → 내 가수 추가’로 요청해 주세요.</div>';return;}
+        res.innerHTML=hits.map(d=>{const a=avatarBG(d);return `<div class="pick" data-id="${d.id}"><div class="pa" style="${a.bg}">${a.txt}</div><div><div class="pn">${d.nm}</div><div class="pg">${d.gp} · ${d.gender==='female'?'걸즈':'보이즈'} · ${d.bday}</div></div></div>`;}).join('');
+        res.querySelectorAll('.pick').forEach(el=>el.onclick=()=>{pendingBias=el.dataset.id;biasSearching=false;buildBias();});
+      }
+      input.oninput=run;
+      setTimeout(()=>input.focus(),60);
+      return;
+    }
+    // 미리보기 (아직 확정 전) — 검색에서 한 명을 탭한 상태
+    if(pendingBias){
+      const pd=findIdol(pendingBias).idol; const pa=avatarBG(pd);
+      b.innerHTML=`
+        <div class="bias-hero">
+          <div class="bphoto" style="${pa.bg}">${pa.txt}</div>
+          <div class="bnm">${pd.nm}</div>
+          <div class="bgp">${pd.gp}</div>
+          <div class="brow"><span class="pillinfo">🎂 ${pd.bday}</span><span class="pillinfo">🏆 ${rankOf(pd.id)}</span></div>
+          <div style="font-size:12px;opacity:.95;margin-top:10px;line-height:1.5">${pd.bio}</div>
+        </div>
+        <button class="cta" id="confirmBias">${pd.nm} 내 최애로 선택! 💗</button>
+        <button class="bbtn wide" id="researchBtn">🔍 다시 검색하기</button>`;
+      $('#confirmBias').onclick=()=>{myBias=pendingBias;pendingBias=null;biasSearching=false;buildBias();updateMe();toast(`${findIdol(myBias).idol.nm} 최애 설정 완료 💗`);};
+      $('#researchBtn').onclick=()=>{pendingBias=null;biasSearching=true;buildBias();};
+      return;
+    }
+    const d=findIdol(myBias).idol;
+    const a=avatarBG(d);
+    b.innerHTML=`
+      <div class="bias-hero">
+        <div class="bphoto" style="${a.bg}">${a.txt}</div>
+        <div class="bnm">${d.nm}</div>
+        <div class="bgp">${d.gp}</div>
+        <div class="brow"><span class="pillinfo">🎂 ${d.bday}</span><span class="pillinfo">🏆 ${rankOf(d.id)}</span><span class="pillinfo">💗 내 표 ${fmt(myVotes[d.id]||0)}</span></div>
+        <div style="font-size:12px;opacity:.95;margin-top:10px;line-height:1.5">${d.bio}</div>
+        <div class="bbtns">
+          <button class="bbtn outline" id="shareBias">🔗 공유하기</button>
+          <button class="bbtn outline" id="researchBtn">🔍 다시 검색하기</button>
+        </div>
+        <input type="file" id="photoInput" accept="image/*" style="display:none" />
+      </div>
+
+      <div class="fan-photos">
+        <div class="fp-head">📸 팬 제출 사진 <span>탭하면 대표 사진으로 바뀌어요</span></div>
+        <div class="fp-strip" id="fpStrip"></div>
+        <div class="fp-note">제출하신 사진은 <b>관리자 승인 후 공개</b>돼요. <b>직접 촬영했거나 저작권 문제가 없는 사진</b>만 올려주세요. 부적절한 사진은 비공개 처리됩니다.</div>
+      </div>
+
+      <button class="cta" id="goVote">${d.nm} 응원하러 가기 →</button>`;
+    function renderFanStrip(){
+      const strip=$('#fpStrip');if(!strip)return;
+      const subs=fanPhotos[d.id]||[];
+      const add=`<button class="fp-add" id="fpAdd">＋<span>사진 제출</span></button>`;
+      const thumbs=subs.map((u)=>`<button class="fp-thumb ${STATE[d.id].photo===u?'on':''}" data-u="${u}"><img src="${u}" alt=""></button>`).join('');
+      strip.innerHTML=add+thumbs;
+      $('#fpAdd').onclick=()=>$('#photoInput').click();
+      strip.querySelectorAll('.fp-thumb').forEach(btn=>btn.onclick=()=>{STATE[d.id].photo=btn.dataset.u;buildBias();toast('대표 사진이 변경됐어요 💗');});
+    }
+    renderFanStrip();
+    // 승인된 팬 사진 불러오기 (배포 환경)
+    if(window.fbGetApprovedPhotos){
+      window.fbGetApprovedPhotos(d.id).then(list=>{
+        if(myBias!==d.id||!list.length)return;
+        fanPhotos[d.id]=list.map(x=>x.url);
+        if(!STATE[d.id]._fanRep){ STATE[d.id].photo=list[list.length-1].url; STATE[d.id]._fanRep=true; }
+        renderFanStrip();
+      }).catch(e=>console.error('승인 사진 로드 실패',e));
+    }
+    $('#photoInput').onchange=async e=>{
+      const f=e.target.files[0];if(!f)return; e.target.value='';
+      if(f.size>5*1024*1024){ toast('5MB 이하 사진만 올릴 수 있어요'); return; }
+      if(window.fbUploadFanPhoto){
+        toast('사진 업로드 중…');
+        try{ await window.fbUploadFanPhoto(d.id,f); toast('제출 완료! 관리자 승인 후 공개돼요 💗'); }
+        catch(err){ console.error(err); toast(err.message==='login-required'?'로그인 후 제출할 수 있어요':'업로드에 실패했어요'); }
+      } else {
+        const url=URL.createObjectURL(f);(fanPhotos[d.id]=fanPhotos[d.id]||[]).push(url);STATE[d.id].photo=url;buildBias();updateMe();toast('사진 제출 (데모: 즉시 반영)');
+      }
+    };
+    $('#researchBtn').onclick=()=>{biasSearching=true;pendingBias=null;buildBias();};
+    { const sb=$('#shareBias'); if(sb)sb.onclick=()=>shareIdol(d.id); }
+    $('#goVote').onclick=()=>{const f=findIdol(myBias);const m=f.round;let stg='prelim';if(FINAL_MONTHS.includes(m)){stg='final';}active=m;stage=stg;buildStageTabs();buildTabs();buildRoundHead();buildList();go('rank');showRankView('birthday');setTimeout(()=>openVote(myBias),250);};
+  }
+
+  /* ---------- 픽 모으기 ---------- */
+  $('#attBtn').onclick=function(){
+    if(!isLoggedIn){ toast('로그인 후 이용할 수 있어요 💗'); setTimeout(showLogin,900); return; }
+    if(attClaimed){return;}
+    attClaimed=true;heart+=ATT_HEART;renderBalance();
+    this.disabled=true;this.textContent='오늘 출석 완료! 내일 또 오세요';
+    balEl.classList.remove('bump');void balEl.offsetWidth;balEl.classList.add('bump');
+    toast('💗 하트픽 '+ATT_HEART+'개 출석 적립!');
+  };
+  $('#adEarnBtn').onclick=openAd;
+
+  /* ---------- 친구 초대 · 공유 보상 ---------- */
+  let myInviteCode=null;
+  async function refreshInvite(){
+    const codeEl=$('#myInviteCode'), statEl=$('#inviteStat'), shStat=$('#shareStat');
+    if(!isLoggedIn||!window.fbEnsureInviteCode){
+      if(codeEl)codeEl.textContent='로그인하면 코드가 생겨요';
+      if(statEl)statEl.textContent='';
+      if(shStat)shStat.textContent='';
+      return;
+    }
+    myInviteCode=await window.fbEnsureInviteCode();
+    if(codeEl)codeEl.textContent=myInviteCode||'—';
+    const inv=await window.fbGetInvite();
+    if(inv&&statEl){
+      const parts=[`지금까지 ${inv.invited}명 초대 (최대 ${INVITE_MONTHLY_CAP}명)`];
+      if(inv.usedInvite) parts.push('초대 코드 사용 완료');
+      statEl.textContent=parts.join(' · ');
+    }
+    if(inv&&shStat){
+      const today=new Date().toISOString().slice(0,10);
+      const used=(inv.shareDay===today)?inv.shareCount:0;
+      shStat.textContent=`오늘 공유 보상 ${used}/${SHARE_DAILY_LIMIT}회 사용`;
+    }
+  }
+  const inviteLink=()=> `https://mypick.info/?invite=${myInviteCode||''}`;
+  { const ci=$('#copyInvite'); if(ci)ci.onclick=()=>{
+      if(!isLoggedIn){ toast('로그인 후 이용할 수 있어요 💗'); return; }
+      if(!myInviteCode){ toast('코드를 불러오는 중이에요'); return; }
+      if(navigator.clipboard) navigator.clipboard.writeText(myInviteCode).then(()=>toast('초대 코드를 복사했어요 💗')).catch(()=>toast(myInviteCode));
+      else toast(myInviteCode);
+    }; }
+  { const ib=$('#inviteBtn'); if(ib)ib.onclick=async()=>{
+      if(!isLoggedIn){ toast('로그인 후 이용할 수 있어요 💗'); setTimeout(showLogin,900); return; }
+      if(!myInviteCode) await refreshInvite();
+      const text=`마이픽에서 최애에게 투표하고 전광판 광고를 선물해요 💗\n초대 코드: ${myInviteCode}\n`;
+      const url=inviteLink();
+      if(navigator.share) navigator.share({title:'마이픽 초대', text, url}).catch(()=>{});
+      else if(navigator.clipboard) navigator.clipboard.writeText(text+url).then(()=>toast('초대 링크를 복사했어요 💗')).catch(()=>toast(url));
+    }; }
+  { const eb=$('#enterInviteBtn'); if(eb)eb.onclick=()=>{
+      if(!isLoggedIn){ toast('로그인 후 이용할 수 있어요 💗'); setTimeout(showLogin,900); return; }
+      openInfo(`<h3>💌 초대 코드 입력</h3>
+        <p>친구에게 받은 코드를 입력하면, <b>첫 투표</b> 후 둘 다 스타픽을 받아요.</p>
+        <p class="hint">받는 사람 ⭐${INVITE_GUEST_STAR}개 · 초대한 사람 ⭐${INVITE_HOST_STAR}개</p>
+        <input id="invInput" class="selbox" placeholder="초대 코드 입력" style="margin:10px 0;text-transform:uppercase">
+        <a class="primary" href="#" id="invSubmit">등록하기 →</a>`);
+      $('#invSubmit').onclick=async(e)=>{
+        e.preventDefault();
+        const r=await window.fbRedeemInvite($('#invInput').value);
+        toast(r.msg);
+        if(r.ok){ infoScrim.classList.remove('show'); refreshInvite(); }
+      };
+    }; }
+  { const sb=$('#shareEarnBtn'); if(sb)sb.onclick=async()=>{
+      if(!isLoggedIn){ toast('로그인 후 이용할 수 있어요 💗'); setTimeout(showLogin,900); return; }
+      const fav=(typeof biasId!=='undefined'&&biasId)?biasId:null;
+      const d=fav?STATE[fav]:null;
+      const text=d?`마이픽에서 ${d.nm}에게 투표했어요! 함께 응원해요 💗`:'마이픽에서 최애에게 투표하고 전광판 광고를 선물해요 💗';
+      const url=d?`https://mypick.info/vote.html?id=${d.id}`:'https://mypick.info';
+      try{ if(navigator.share) await navigator.share({title:'마이픽', text, url});
+           else if(navigator.clipboard) { await navigator.clipboard.writeText(text+'\n'+url); toast('공유 링크를 복사했어요 💗'); } }
+      catch(e){ return; }   // 공유 취소 시 보상 없음
+      const r=await window.fbClaimShare(SHARE_HEART,SHARE_DAILY_LIMIT);
+      if(r&&r.ok){ heart+=r.heart; renderBalance(); if(window.fbSetWallet)window.fbSetWallet(heart,star);
+        toast(`💗 하트픽 ${r.heart}개 적립! (오늘 ${r.left}회 남음)`); refreshInvite(); }
+      else if(r) toast(r.msg);
+    }; }
+  $('#adBannerBtn').onclick=openAd;
+  { const cb=$('#convertBtn'); if(cb)cb.onclick=openConvert; }
+  function openConvert(){
+    if(!isLoggedIn){ toast('로그인 후 이용할 수 있어요 💗'); return; }
+    if(heart<CONVERT_RATE){
+      openInfo(`<h3>하트픽 → 스타픽 전환 🔄</h3>
+        <p>하트픽 ${CONVERT_RATE}개로 스타픽 1개를 만들 수 있어요.</p>
+        <p class="warn">보유 하트픽이 부족해요 (현재 ${fmt(heart)}개). 광고·출석으로 모아보세요!</p>`);
+      return;
+    }
+    const maxStar=Math.floor(heart/CONVERT_RATE);
+    openInfo(`<h3>하트픽 → 스타픽 전환 🔄</h3>
+      <p>하트픽 ${CONVERT_RATE}개 = 스타픽 1개 · 보유 하트픽 ${fmt(heart)}개</p>
+      <div style="margin:16px 0 6px">
+        <input type="range" id="cvRange" min="1" max="${maxStar}" value="1" step="1" style="width:100%">
+        <div style="text-align:center;margin-top:12px;font-size:16px">하트픽 <b><span id="cvHeart">${fmt(CONVERT_RATE)}</span></b>개 → 스타픽 <b style="color:var(--pink-deep)"><span id="cvStar">1</span>개</b></div>
+      </div>
+      <p class="warn">전환은 결제보다 효율이 낮아요. 스타픽은 충전이 훨씬 이득이에요! 💎</p>
+      <a class="primary" href="#" id="cvGo">전환하기 →</a>`);
+    const r=$('#cvRange'); if(!r)return;
+    const upd=()=>{ const n=+r.value; $('#cvStar').textContent=fmt(n); $('#cvHeart').textContent=fmt(n*CONVERT_RATE); };
+    r.oninput=upd; upd();
+    $('#cvGo').onclick=(e)=>{ e.preventDefault(); const n=+r.value; if(heart<n*CONVERT_RATE)return; heart-=n*CONVERT_RATE; star+=n; renderBalance(); updateMe(); infoScrim.classList.remove('show'); toast(`⭐ 스타픽 ${fmt(n)}개로 전환 완료!`); };
+  }
+  $$('.mission').forEach(m=>m.onclick=()=>toast('오퍼월 연동 예정 — 앱 출시 후 열려요'));
+
+  /* ---------- 픽 충전 ---------- */
+  const PACKS=[
+    {emoji:'🌱',nm:'스타터',price:2000,stars:170,pid:'star_170'},
+    {emoji:'💗',nm:'베이직',price:5000,stars:425,pid:'star_425'},
+    {emoji:'💖',nm:'플러스',price:13000,stars:1020,pid:'star_1020'},
+    {emoji:'⭐',nm:'인기',price:17000,stars:1360,rec:true,pid:'star_1360'},
+    {emoji:'🔥',nm:'파워',price:30000,stars:2550,pid:'star_2550'},
+    {emoji:'💎',nm:'메가',price:50000,stars:4250,pid:'star_4250'},
+    {emoji:'👑',nm:'얼티밋',price:100000,stars:8500,pid:'star_8500'},
+  ];
+  const PACKS_GL=[
+    {emoji:'🌱',nm:'Starter',price:'$1.99',stars:170,pid:'star_170'},
+    {emoji:'💗',nm:'Basic',price:'$3.99',stars:425,pid:'star_425'},
+    {emoji:'💖',nm:'Plus',price:'$9.99',stars:1020,pid:'star_1020'},
+    {emoji:'⭐',nm:'Popular',price:'$12.99',stars:1360,rec:true,pid:'star_1360'},
+    {emoji:'🔥',nm:'Power',price:'$22.99',stars:2550,pid:'star_2550'},
+    {emoji:'💎',nm:'Mega',price:'$38.99',stars:4250,pid:'star_4250'},
+    {emoji:'👑',nm:'Ultimate',price:'$74.99',stars:8500,pid:'star_8500'},
+  ];
+  let chargeMode='kr';
+  const chargeScrim=$('#chargeScrim');
+  $('#chargeBtn').onclick=openCharge;
+  chargeScrim.onclick=e=>{if(e.target===chargeScrim)chargeScrim.classList.remove('show');};
+  function priceOf(p,isKR){
+    if(iapStore && typeof CdvPurchase!=='undefined'){
+      try{ const prod=iapStore.get(p.pid, CdvPurchase.Platform.GOOGLE_PLAY); const pr=prod&&prod.pricing&&prod.pricing.price; if(pr)return pr; }catch(e){}
+    }
+    return isKR?fmt(p.price)+'원':p.price;
+  }
+  function packRows(list,isKR){
+    return list.map((p,i)=>`<div class="pack ${p.rec?'rec':''}" data-i="${i}">${p.rec?'<span class="precbadge">⭐ 추천</span>':''}<span class="pemoji">${p.emoji}</span><div class="pinfo"><div><span class="ppicks">스타픽 ${fmt(p.stars)}개</span></div><div class="pvotes">= ${fmt(p.stars*STAR_VOTE)}표 응원 가능</div></div><div class="pprice">${priceOf(p,isKR)}</div></div>`).join('');
+  }
+  function openCharge(){ if(!isLoggedIn){ toast('로그인 후 충전할 수 있어요 💗'); setTimeout(showLogin,900); return; } drawCharge(); chargeScrim.classList.add('show'); }
+  function drawCharge(){
+    const isKR=chargeMode==='kr';
+    const list=isKR?PACKS:PACKS_GL;
+    const payNote=isKR?'카드 · 카카오페이 · 네이버페이로 결제':'App Store · Google Play 인앱결제';
+    const tail=isKR?'국내 PG(카드·간편결제)':'스토어 인앱결제';
+    $('#chargeSheet').innerHTML=`<h3>스타픽 충전하기 💎</h3>
+      <div class="ctabs"><button class="ctab ${isKR?'on':''}" data-m="kr">🇰🇷 한국</button><button class="ctab ${!isKR?'on':''}" data-m="gl">🌐 해외</button></div>
+      <p>스타픽으로 투표해요 · 스타픽 1개 = ${fmt(STAR_VOTE)}표 · ${payNote}</p>
+      ${packRows(list,isKR)}
+      <button class="opt-close" id="chargeClose">닫기</button>
+      <p style="text-align:center;font-size:10.5px;color:var(--mute);margin:11px 0 0;line-height:1.5">＊ 구글 플레이 인앱결제로 안전하게 결제돼요.</p>`;
+    $('#chargeSheet').querySelectorAll('.pack').forEach(el=>el.onclick=()=>buyPack(+el.dataset.i,isKR));
+    $('#chargeSheet').querySelectorAll('.ctab').forEach(t=>t.onclick=()=>{chargeMode=t.dataset.m;drawCharge();});
+    $('#chargeClose').onclick=()=>chargeScrim.classList.remove('show');
+  }
+  /* ===== 인앱결제 (Google Play Billing) ===== */
+  const STARS_BY_PID={}; PACKS.forEach(p=>STARS_BY_PID[p.pid]=p.stars);
+  let iapInit=false, iapReady=false, iapStore=null;
+  function initIAP(){
+    if(iapInit) return;
+    if(typeof CdvPurchase==='undefined' || !CdvPurchase.store) return;  // 웹/미리보기 or 아직 준비 안 됨
+    iapInit=true;
+    const {store, ProductType, Platform, LogLevel}=CdvPurchase;
+    iapStore=store;
+    try{ store.verbosity = LogLevel.WARNING; }catch(e){}
+    PACKS.forEach(p=>store.register({ id:p.pid, type:ProductType.CONSUMABLE, platform:Platform.GOOGLE_PLAY }));
+    store.when()
+      .approved(t => t.finish())
+      .finished(t => {
+        (t.products||[]).forEach(prod=>{ const add=STARS_BY_PID[prod.id]; if(add) grantStars(add); });
+      });
+    store.error(err => { console.error('IAP error', err); });
+    store.initialize([Platform.GOOGLE_PLAY]).then(()=>{ iapReady=true; if(chargeScrim.classList.contains('show')) drawCharge(); });
+  }
+  function grantStars(n){
+    star+=n; renderBalance(); updateMe();
+    chargeScrim.classList.remove('show');
+    balEl.classList.remove('bump'); void balEl.offsetWidth; balEl.classList.add('bump');
+    toast(`⭐ 스타픽 ${fmt(n)}개 충전 완료!`);
+  }
+  function orderProduct(pid){
+    if(!isLoggedIn){ toast('로그인 후 충전할 수 있어요 💗'); return; }
+    if(!iapStore){ toast('결제는 스토어에 출시된 앱에서만 가능해요'); return; }
+    const product=iapStore.get(pid, CdvPurchase.Platform.GOOGLE_PLAY);
+    const offer=product && product.getOffer();
+    if(!offer){ toast('상품 정보를 불러오는 중이에요 · 잠시 후 다시 시도해주세요'); return; }
+    offer.order().then(err=>{ if(err) console.warn('주문 취소/오류', err); });
+  }
+  function buyPack(i,isKR){
+    const p=(isKR?PACKS:PACKS_GL)[i];
+    if(!p||!p.pid){ toast('상품 정보 오류'); return; }
+    orderProduct(p.pid);
+  }
+  // 플러그인 준비되면 초기화 (deviceready + 재시도)
+  document.addEventListener('deviceready', initIAP, false);
+  { let n=0; const t=setInterval(()=>{ n++; initIAP(); if(iapInit||n>12){ clearInterval(t); } }, 1500); }
+
+  /* ---------- 내정보 ---------- */
+  function updateMe(){
+    $('#mePick').textContent='⭐ '+fmt(star)+' · 💗 '+fmt(heart);
+    $('#meHello').textContent=nickname+' 님';
+    const mb=$('#meBias');
+    if(myBias){const bd=findIdol(myBias).idol;const ba=avatarBG(bd);mb.innerHTML=`<span class="mebias"><span class="mb-thumb" style="${ba.bg}">${ba.txt}</span><span>${bd.nm} <small>(${bd.gp})</small></span></span>`;}
+    else{mb.textContent='아직 선택 안 함';}
+    const total=Object.values(myVotes).reduce((a,b)=>a+b,0);
+    $('#meVotes').textContent=fmt(total)+'표';
+  }
+  $('#nickSave').onclick=()=>{const v=$('#nickInput').value.trim()||'게스트';nickname=v;updateMe();toast('닉네임이 저장됐어요');};
+  $('#logoutBtn').onclick=async()=>{if(window.fbLogout){try{await window.fbLogout();}catch(e){}}isLoggedIn=false;go('rank');loginEl.classList.remove('hide');$('.content').scrollTop=0;};
+  { const wb=$('#withdrawBtn'); if(wb)wb.onclick=openWithdraw; }
+  function openWithdraw(){
+    if(!isLoggedIn){ toast('로그인 상태에서만 탈퇴할 수 있어요'); return; }
+    openInfo(`<h3>회원 탈퇴</h3>
+      <p>정말 탈퇴하시겠어요?</p>
+      <p class="warn">• 탈퇴하면 <b>닉네임·보유 픽 등 회원정보가 삭제</b>되며 <b>되돌릴 수 없어요</b>.<br>• 지금까지 준 표(집계)는 익명으로 처리되어 순위에 남습니다.<br>• 충전한 스타픽 잔액도 함께 사라져요.</p>
+      <a class="primary" href="#" id="wdConfirm" style="background:#e5484d">탈퇴하기</a>
+      <button class="opt-close" id="wdCancel">취소</button>`);
+    $('#wdCancel').onclick=()=>infoScrim.classList.remove('show');
+    $('#wdConfirm').onclick=async(e)=>{
+      e.preventDefault();
+      if(!window.fbDeleteAccount){ toast('탈퇴는 배포 환경(앱)에서 작동해요'); return; }
+      $('#wdConfirm').textContent='처리 중…';
+      try{
+        await window.fbDeleteAccount();
+        infoScrim.classList.remove('show');
+        isLoggedIn=false; heart=0; star=0; walletReady=false;
+        go('rank'); loginEl.classList.remove('hide'); $('.content').scrollTop=0;
+        toast('회원 탈퇴가 완료됐어요. 이용해주셔서 감사합니다 💗');
+      }catch(err){
+        console.error(err);
+        toast('탈퇴 처리에 실패했어요 · 다시 로그인 후 시도해주세요');
+        $('#wdConfirm').textContent='탈퇴하기';
+      }
+    };
+  }
+
+  /* ---------- 보상형 광고 (AdMob) ---------- */
+  const adScrim=$('#adScrim'),adFill=$('#adFill'),adCount=$('#adCount'),adDone=$('#adDone'),adTitle=$('#adTitle'),adSub=$('#adSub');
+  let adTimer=null, adWatchedToday=0, adDateKey='';
+  let adBusy=false;          // 광고 실행 중복 방지
+  let adRewardEarned=false;  // 이번 광고에서 보상 조건 충족했는지
+  let adRewardPending=false; // 확인 버튼으로 받을 보상이 대기 중인지
+  function todayKey(){const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();}
+  function adLimitLeft(){ const k=todayKey(); if(adDateKey!==k){adDateKey=k;adWatchedToday=0;} return AD_DAILY_LIMIT-adWatchedToday; }
+  function creditAdReward(){ adWatchedToday++; heart+=AD_HEART; renderBalance(); balEl.classList.remove('bump'); void balEl.offsetWidth; balEl.classList.add('bump'); toast('💗 하트픽 '+AD_HEART+'개 적립! (오늘 '+Math.max(0,adLimitLeft())+'회 남음)'); }
+
+  // AdMob 초기화 + 보상 리스너 (앱에서만 / 웹은 가짜 광고로 폴백)
+  const ADMOB_REWARD_ID='ca-app-pub-5050856305536414/7993635116'; // 실제 보상형 광고 ID
+  const AM=()=> (window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.AdMob)||null;
+  let admobReady=false;
+  (async function initAdMob(){ const a=AM(); if(!a)return; try{ await a.initialize(); admobReady=true; a.addListener('onRewardedVideoAdReward',()=>{ adRewardEarned=true; }); }catch(e){ console.error('AdMob 초기화 실패',e); } })();
+
+  async function openAd(){
+    if(!isLoggedIn){ toast('로그인 후 이용할 수 있어요 💗'); setTimeout(showLogin,900); return; }
+    if(adBusy) return;                                  // 이미 광고 진행 중이면 무시 (중복·연속재생 차단)
+    if(adLimitLeft()<=0){ toast('오늘 광고 적립은 다 받았어요 · 내일 또 받을 수 있어요'); return; }
+    const a=AM();
+    if(a && admobReady){
+      adBusy=true; adRewardEarned=false;
+      let res=null;
+      try{
+        await a.prepareRewardVideoAd({ adId: ADMOB_REWARD_ID, isTesting: false });
+        res=await a.showRewardVideoAd();                // 광고가 닫히면 resolve
+      }catch(e){ console.error('보상형 광고 실패',e); toast('광고를 불러오지 못했어요 · 잠시 후 다시 시도해주세요'); adBusy=false; return; }
+      adBusy=false;
+      if(adRewardEarned || (res && res.amount)){ showAdConfirm(); }  // 끝까지 봤으면 확인 모달 (자동 적립 X)
+      else { toast('광고를 끝까지 시청해야 픽이 적립돼요'); }
+      return;
+    }
+    openFakeAd();  // 웹/미리보기용 (가짜 진행바)
+  }
+
+  // 시청 완료 후 "확인 눌러야 적립" 모달
+  function showAdConfirm(){
+    adRewardPending=true;
+    adScrim.classList.add('show');
+    adTitle.textContent='시청 완료! 🎉';
+    adSub.textContent='아래 버튼을 눌러 픽을 받으세요';
+    adFill.style.width='100%'; adCount.textContent='';
+    adDone.style.display='inline-block';
+  }
+  adDone.onclick=claimAdReward;
+  function claimAdReward(){
+    if(!adRewardPending) return;   // 이미 받았으면 무시 (이중 적립 차단)
+    adRewardPending=false;
+    adScrim.classList.remove('show');
+    creditAdReward();
+  }
+  function openFakeAd(){
+    adScrim.classList.add('show');adTitle.textContent='광고 시청 중…';adSub.textContent='끝까지 보면 하트픽 5개가 적립돼요';adDone.style.display='none';adFill.style.width='0%';
+    const total=reduce?300:3000,start=performance.now();cancelAnimationFrame(adTimer);
+    (function frame(now){const p=Math.min(1,(now-start)/total);adFill.style.width=(p*100)+'%';adCount.textContent=Math.ceil((1-p)*(total/1000))+'초';
+      if(p<1)adTimer=requestAnimationFrame(frame);else{adTitle.textContent='시청 완료! 🎉';adSub.textContent='아래 버튼을 눌러 픽을 받으세요';adCount.textContent='';adRewardPending=true;adDone.style.display='inline-block';}})(start);
+  }
+
+  /* ---------- nav ---------- */
+  function go(sc){
+    screen=sc;
+    $$('.screen').forEach(s=>s.classList.remove('on'));
+    $('#sc-'+sc).classList.add('on');
+    $$('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.sc===sc));
+    $('.content').scrollTop=0;
+    if(sc==='rank' && typeof showRankView==='function') showRankView('hub');
+    if(sc==='bias')buildBias();
+    if(sc==='me')updateMe();
+  }
+  function podiumItem(d,rank,votes){
+    const medal=['🥇','🥈','🥉'][rank-1]||'';
+    const a=avatarBG(d);
+    return `<div class="pod-item p${rank}"><span class="pod-medal">${medal}</span><div class="pod-th" style="${a.bg}">${a.txt}</div><div class="pod-nm">${d.nm}</div><div class="pod-vt">${fmt(votes||0)}표</div></div>`;
+  }
+  function buildHubPodium(){
+    const wrap=$('#hubPodium'); if(!wrap)return;
+    // 본선: 가장 임박한 달 TOP 3
+    const fm=FINAL_MONTHS[0];
+    const top3=idolsInRound(fm).slice().sort((a,b)=>b.votes-a.votes).slice(0,3);
+    const finalRows = top3.length
+      ? `<div class="pod-row">${top3.map((d,i)=>podiumItem(d,i+1,d.votes)).join('')}</div>`
+      : `<div class="pod-soon">아직 참여한 가수가 없어요</div>`;
+    const starTop=starRanked().slice(0,3);
+    const starRows = starTop.length
+      ? `<div class="pod-row">${starTop.map((it,i)=>podiumItem(it.d,i+1,it.v)).join('')}</div>`
+      : `<div class="pod-soon">아직 참여한 가수가 없어요</div>`;
+    const groupTop=groupRanked().slice(0,3);
+    const groupRows = !GROUP_OPEN
+      ? `<div class="pod-soon">곧 오픈 예정이에요 🔜</div>`
+      : (groupTop.length
+        ? `<div class="pod-row">${groupTop.map((it,i)=>podiumItem(it.d,i+1,it.v)).join('')}</div>`
+        : `<div class="pod-soon">아직 참여한 그룹이 없어요</div>`);
+    wrap.innerHTML=`
+      <div class="pod-sec-h">🔥 지금 순위</div>
+      <div class="pod-card" data-hub="final">
+        <div class="pod-ch"><span>🎂 생일 본선 · ${fm}월</span><span class="go">전체 보기 →</span></div>
+        ${finalRows}
+      </div>
+      <div class="pod-card" data-hub="star">
+        <div class="pod-ch"><span>⭐ 이달의 스타</span><span class="go">전체 보기 →</span></div>
+        ${starRows}
+      </div>
+      <div class="pod-card" data-hub="group">
+        <div class="pod-ch"><span>👥 이달의 그룹</span><span class="go">${GROUP_OPEN?'전체 보기 →':''}</span></div>
+        ${groupRows}
+      </div>`;
+    wrap.querySelectorAll('.pod-card').forEach(c=>c.onclick=()=>{
+      const h=c.dataset.hub;
+      if(h==='final')openBirthday('final');
+      else if(h==='group'){ if(GROUP_OPEN)showRankView('group'); else toast('이달의 그룹은 곧 오픈돼요 🔜'); }
+      else showRankView(h);
+    });
+  }
+  $$('#nav button').forEach(b=>b.onclick=()=>go(b.dataset.sc));
+
+  /* ---------- 랭킹 허브 ↔ 하위뷰 ---------- */
+  let rankView='hub';
+  function showRankView(v){
+    rankView=v;
+    const hub=$('#rankHub'), vote=$('#rankVote'), starV=$('#rankStar'), grp=$('#rankGroup');
+    if(hub)hub.style.display = v==='hub'?'block':'none';
+    if(vote)vote.style.display = v==='birthday'?'block':'none';
+    if(starV)starV.style.display = v==='star'?'block':'none';
+    if(grp)grp.style.display = v==='group'?'block':'none';
+    const c=$('.content'); if(c)c.scrollTop=0;
+    try{
+      if(v==='hub' && typeof buildHubPodium==='function') buildHubPodium();
+      if(v==='star' && typeof buildStarList==='function') buildStarList();
+      if(v==='group' && typeof buildGroupList==='function') buildGroupList();
+    }catch(e){ console.error('뷰 빌드 오류',e); }
+  }
+  function openBirthday(stg){
+    stage=stg; active=(stg==='final'?FINAL_MONTHS:PRELIM_MONTHS)[0];
+    buildStageTabs();buildTabs();buildRoundHead();buildList();
+    showRankView('birthday');
+  }
+  $$('.hub-card').forEach(b=>b.onclick=()=>{
+    const h=b.dataset.hub;
+    if(h==='final')openBirthday('final');
+    else if(h==='prelim')openBirthday('prelim');
+    else if(h==='group'){ if(GROUP_OPEN)showRankView('group'); else toast('이달의 그룹은 곧 오픈돼요 🔜'); }
+    else showRankView(h);   // star
+  });
+  { const bh=$('#backHub'); if(bh)bh.onclick=()=>showRankView('hub'); }
+  { const bhg=$('#backHubG'); if(bhg)bhg.onclick=()=>showRankView('hub'); }
+  { const bhs=$('#backHubS'); if(bhs)bhs.onclick=()=>showRankView('hub'); }
+  { const sn=$('#starNominate'); if(sn)sn.onclick=openStarNominate; }
+  function openStarNominate(){
+    if(!isLoggedIn){ toast('로그인 후 신청할 수 있어요 💗'); return; }
+    openInfo(`<h3>다음달 나의 스타 등록 📝</h3>
+      <p>최애를 <b>다음달 이달의 스타 후보</b>로 추천해요.</p>
+      <p class="warn">• 한 달에 <b>3명</b>까지 신청할 수 있어요 (같은 후보는 1번).<br>• <b>다수 추천된 후보</b>는 다음달 이달의 스타 후보로 등록됩니다.</p>
+      <input id="nomSearch" class="nick-input" placeholder="가수 이름 검색 (예: 카리나)" autocomplete="off">
+      <div id="nomResults" class="pick-grid" style="max-height:280px;overflow:auto;margin-top:10px"></div>`);
+    const input=$('#nomSearch'), res=$('#nomResults'); if(!input)return;
+    function draw(){
+      const q=normTxt(input.value.trim());
+      if(!q){ res.innerHTML='<p style="color:var(--mute);font-size:12.5px;text-align:center;padding:14px">이름을 입력해 최애를 찾아보세요</p>'; return; }
+      const hits=allIdols().filter(d=>d._blob.indexOf(q)>-1).slice(0,40);
+      if(!hits.length){ res.innerHTML='<p style="color:var(--mute);font-size:12.5px;text-align:center;padding:14px">검색 결과가 없어요</p>'; return; }
+      res.innerHTML=hits.map(d=>{const a=avatarBG(d);return `<div class="pick" data-id="${d.id}"><div class="pa" style="${a.bg}">${a.txt}</div><div><div class="pn">${d.nm}</div><div class="pg">${d.gp} · ${d.bday}</div></div></div>`;}).join('');
+      res.querySelectorAll('.pick').forEach(el=>el.onclick=()=>nominate(el.dataset.id));
+    }
+    input.oninput=draw; draw();
+  }
+  async function nominate(id){
+    const d=STATE[id]; if(!d)return;
+    if(!window.fbNominateStar){ toast('신청은 배포 환경(깃허브)에서 작동해요'); return; }
+    try{
+      const left=await window.fbNominateStar(id, d.nm);
+      infoScrim.classList.remove('show');
+      toast(`📝 ${d.nm} 신청 완료! 이번 달 ${left}명 더 신청할 수 있어요`);
+    }catch(e){
+      if(e&&e.message==='limit') toast('이번 달 신청은 3명까지예요 · 다음 달에 또 신청해주세요');
+      else if(e&&e.message==='dup') toast('이미 이번 달에 신청한 후보예요 💗');
+      else { console.error(e); toast('신청에 실패했어요 · 잠시 후 다시 시도해주세요'); }
+    }
+  }
+
+  /* ---------- 안드로이드 뒤로가기 ---------- */
+  function anyOverlayOpen(){ return !!document.querySelector('.scrim.show') || !loginEl.classList.contains('hide'); }
+  function closeAllOverlays(){ document.querySelectorAll('.scrim.show').forEach(s=>s.classList.remove('show')); loginEl.classList.add('hide'); }
+  let backPrime=false, backT=null;
+  function handleBack(){
+    if(anyOverlayOpen()){ closeAllOverlays(); return; }   // 1) 열린 시트/로그인 먼저 닫기
+    if(screen!=='rank'){ go('rank'); return; }             // 2) 다른 탭이면 랭킹으로
+    if(rankView!=='hub'){ showRankView('hub'); return; }    // 3) 랭킹 하위뷰면 허브로
+    if(!backPrime){ backPrime=true; toast('한 번 더 누르면 종료돼요'); clearTimeout(backT); backT=setTimeout(()=>backPrime=false,2000); return; }
+    const A=window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.App; if(A)A.exitApp();  // 4) 종료
+  }
+  (function(){ const A=window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.App; if(A)A.addListener('backButton',handleBack); })();
+
+  /* ---------- toast / floaty ---------- */
+  let toastT=null;
+  function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1900);}
+
+  /* ---------- 로그인 ---------- */
+  const loginEl=$('#login');
+  let isLoggedIn=false;
+  const enterApp=()=>loginEl.classList.add('hide');
+  const showLogin=()=>{loginEl.classList.remove('hide');$('.content').scrollTop=0;};
+  $$('.sso').forEach(b=>b.onclick=async()=>{
+    if(!b.dataset.sso)return;   // 이메일 버튼은 따로 처리
+    const prov=b.dataset.sso;
+    if(prov==='구글' && window.fbGoogleLogin){
+      try{ await window.fbGoogleLogin(); }
+      catch(e){ console.error(e); toast(e.friendly||'구글 로그인이 취소됐어요'); }
+    } else if(prov==='카카오' && window.fbKakaoLogin){
+      try{ await window.fbKakaoLogin(); }
+      catch(e){ console.error(e); toast(e.friendly||'카카오 로그인이 취소됐어요'); }
+    } else if(prov==='구글'||prov==='카카오'){
+      enterApp();   // 로컬 미리보기 폴백
+    } else {
+      toast(prov+' 로그인은 준비 중이에요');
+    }
+  });
+  // 이메일 로그인/가입
+  const emailToggle=$('#emailToggle'), emailForm=$('#emailForm');
+  if(emailToggle) emailToggle.onclick=()=>{ const on=emailForm.classList.toggle('show'); if(on)$('#emEmail').focus(); };
+  const emGo=$('#emGo');
+  if(emGo) emGo.onclick=async()=>{
+    const email=$('#emEmail').value.trim(), pw=$('#emPw').value;
+    if(!email||!pw){ toast('이메일과 비밀번호를 입력해주세요'); return; }
+    if(!window.fbEmailAuth){ enterApp(); return; }   // 로컬 미리보기 폴백
+    emGo.disabled=true; emGo.textContent='처리 중…';
+    try{ const r=await window.fbEmailAuth(email,pw); toast(r.mode==='signup'?'가입 완료! 환영해요 💗':'로그인됐어요 💗'); }
+    catch(e){ toast(e.friendly||'로그인에 실패했어요'); }
+    finally{ emGo.disabled=false; emGo.textContent='시작하기'; }
+  };
+  $('#browseBtn').onclick=enterApp;
+  // 로그인 상태 변화 감지 (새로고침해도 로그인 유지)
+  function hookAuth(){
+    if(!window.fbOnAuth)return;
+    window.fbOnAuth(user=>{
+      isLoggedIn=!!user;
+      const ml=$('#meLogin');
+      if(user){
+        const pid=(user.providerData&&user.providerData[0]&&user.providerData[0].providerId)||'';
+        console.log('[MYPICK] 로그인 UID:',user.uid,'· provider:',pid,'· email:',user.email||'(없음)');
+        const isKakao = pid==='oidc.kakao' || (user.uid&&user.uid.indexOf('kakao:')===0);
+        const plabel = pid==='google.com'?'구글' : isKakao?'카카오' : pid==='password'?'이메일' : '계정';
+        const nm=user.displayName||(user.email?user.email.split('@')[0]:'');
+        if(nm){ nickname=nm; const ni=$('#nickInput'); if(ni)ni.value=nickname; }
+        const detail = user.email?(' · '+user.email):(user.displayName?(' · '+user.displayName):'');
+        if(ml)ml.textContent=plabel+'로 로그인됨'+detail;
+        const pa=$('#menuPhotoAdmin'); if(pa)pa.style.display=(window.fbIsAdmin&&window.fbIsAdmin())?'flex':'none';
+        const ia=$('#menuIdolAdmin'); if(ia)ia.style.display=(window.fbIsAdmin&&window.fbIsAdmin())?'flex':'none';
+        const sa=$('#menuStarAdmin'); if(sa)sa.style.display=(window.fbIsAdmin&&window.fbIsAdmin())?'flex':'none';
+        const ga=$('#menuGroupAdmin'); if(ga)ga.style.display=(window.fbIsAdmin&&window.fbIsAdmin())?'flex':'none';
+        const sca=$('#menuSchedAdmin'); if(sca)sca.style.display=(window.fbIsAdmin&&window.fbIsAdmin())?'flex':'none';
+        refreshInvite();   // 초대 코드·통계 갱신
+        enterApp();
+        if(window.fbGetWallet){ window.fbGetWallet().then(w=>{ if(w){ heart=w.heart||0; star=w.star||0; } walletReady=true; renderBalance(); updateMe(); }); }
+        else updateMe();
+      } else {
+        walletReady=false; heart=0; star=0; renderBalance();
+        nickname='게스트'; const ni=$('#nickInput'); if(ni)ni.value='게스트'; updateMe();  // 로그아웃 시 닉네임 초기화
+        if(ml)ml.textContent='둘러보는 중 · 로그인하면 응원할 수 있어요';
+      }
+    });
+  }
+  if(window.fbReady) hookAuth(); else window.addEventListener('fb-ready',hookAuth);
+  if(window.fbReady) loadApprovedIdols(); else window.addEventListener('fb-ready',loadApprovedIdols);
+
+  /* ---------- 언어 토글 ---------- */
+  $('#langBtn').onclick=()=>toast('영어 버전은 준비 중이에요 · English coming soon');
+
+  /* ---------- 더보기: 가수 추가/정정 · 광고 시안 접수 ---------- */
+  const infoScrim=$('#infoScrim');
+  infoScrim.onclick=e=>{if(e.target===infoScrim)infoScrim.classList.remove('show');};
+  function openInfo(html){
+    $('#infoSheet').innerHTML=html+'<button class="opt-close" id="infoClose">닫기</button>';
+    $('#infoClose').onclick=()=>infoScrim.classList.remove('show');
+    infoScrim.classList.add('show');
+  }
+  $('#menuAddIdol').onclick=()=>{
+    openInfo(`<h3>내 가수 추가 · 정보 정정</h3>
+      <p>찾는 가수가 명부에 없나요? 아래에 입력해 신청하면 <b>관리자 승인 후 등록</b>돼요.</p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin:10px 0">
+        <input id="ai_name" class="nick-input" placeholder="가수 이름 (예: 지드래곤)" maxlength="20">
+        <input id="ai_group" class="nick-input" placeholder="그룹명 (예: 빅뱅 · 솔로)" maxlength="30">
+        <div style="display:flex;gap:8px">
+          <select id="ai_gender" class="nick-input" style="flex:1"><option value="male">보이즈</option><option value="female">걸즈</option></select>
+          <input id="ai_month" class="nick-input" style="flex:1;min-width:0" type="number" min="1" max="12" placeholder="생월">
+          <input id="ai_day" class="nick-input" style="flex:1;min-width:0" type="number" min="1" max="31" placeholder="생일">
+        </div>
+      </div>
+      <p class="warn">정확한 정보로 신청해 주세요. 승인 시 관리자가 최종 확인·수정합니다.</p>
+      <a class="primary" href="#" id="ai_submit">신청하기 →</a>`);
+    const submit=$('#ai_submit'); if(!submit)return;
+    submit.onclick=async(e)=>{
+      e.preventDefault();
+      if(!isLoggedIn){ toast('로그인 후 신청할 수 있어요 💗'); return; }
+      const name=$('#ai_name').value.trim(), group=$('#ai_group').value.trim();
+      const gender=$('#ai_gender').value, m=+$('#ai_month').value, day=+$('#ai_day').value;
+      if(!name||!group){ toast('이름과 그룹을 입력해 주세요'); return; }
+      if(!(m>=1&&m<=12)||!(day>=1&&day<=31)){ toast('생일 월(1~12)·일(1~31)을 정확히 입력해 주세요'); return; }
+      if(!window.fbRequestIdol){ toast('신청 기능은 배포 환경(깃허브)에서 작동해요'); return; }
+      submit.style.pointerEvents='none'; submit.textContent='신청 중…';
+      try{
+        await window.fbRequestIdol({name,group,gender,birthMonth:m,birthDay:day});
+        infoScrim.classList.remove('show'); toast('신청 완료! 승인되면 명단에 등록돼요 💗');
+      }catch(err){ console.error(err); toast('신청에 실패했어요. 잠시 후 다시 시도해 주세요'); submit.style.pointerEvents=''; submit.textContent='신청하기 →'; }
+    };
+  };
+  $('#menuAdSubmit').onclick=()=>{
+    openInfo(`<h3>광고 시안 접수</h3>
+      <p>이달의 <b>1위 가수 생일 광고</b> 시안을 아래 메일로 보내주세요.</p>
+      <div class="mailbox">📧 contact@mypick.info</div>
+      <p class="warn">• 메일 제목은 <b>"○월 1위 / 가수 : ○○○ 광고시안접수"</b> 형식으로 보내주세요.<br>• <b>깨짐 없는 고화질 파일</b>로 보내주세요(저화질·압축 손상 파일은 광고가 제대로 나오지 않아요).<br>• 시안의 디자인 요소가 <b>타인의 저작권을 침해하지 않도록</b> 주의해 주세요.<br>• <b>시안이 접수되지 않으면 광고가 정상적으로 진행되지 않습니다.</b></p>
+      <a class="primary" href="mailto:contact@mypick.info?subject=%EC%9B%94%201%EC%9C%84%20%2F%20%EA%B0%80%EC%88%98%20%3A%20%EA%B4%91%EA%B3%A0%EC%8B%9C%EC%95%88%EC%A0%91%EC%88%98">메일로 시안 보내기 →</a>`);
+  };
+  // 관리자: 팬 사진 승인
+  const menuPhotoAdmin=$('#menuPhotoAdmin');
+  if(menuPhotoAdmin) menuPhotoAdmin.onclick=async()=>{
+    openInfo(`<h3>🛠 팬 사진 승인</h3><p id="admStatus">불러오는 중…</p><div id="admList" class="adm-list"></div>`);
+    if(!window.fbGetPendingPhotos){ $('#admStatus').textContent='관리자 기능은 배포 환경(깃허브)에서 작동해요.'; return; }
+    try{
+      const pend=await window.fbGetPendingPhotos();
+      $('#admStatus').textContent = pend.length ? `대기 중 ${pend.length}건 · 승인하면 모두에게 공개돼요` : '대기 중인 사진이 없어요 ✨';
+      const wrap=$('#admList'); if(!wrap)return; wrap.innerHTML='';
+      pend.forEach(p=>{
+        const nm=(STATE[p.idolId]&&STATE[p.idolId].nm)||p.idolId;
+        const card=document.createElement('div'); card.className='adm-card';
+        card.innerHTML=`<img class="adm-img" src="${p.url}" alt=""><div class="adm-meta">${nm}</div><div class="adm-acts"><button class="adm-ok">승인</button><button class="adm-no">거절</button></div>`;
+        card.querySelector('.adm-ok').onclick=async()=>{ try{ await window.fbReviewPhoto(p.id,true); card.remove(); toast('승인했어요 💗'); }catch(e){ toast('처리 실패'); } };
+        card.querySelector('.adm-no').onclick=async()=>{ try{ await window.fbReviewPhoto(p.id,false); card.remove(); toast('거절했어요'); }catch(e){ toast('처리 실패'); } };
+        wrap.appendChild(card);
+      });
+    }catch(e){ console.error(e); $('#admStatus').textContent='불러오기에 실패했어요'; }
+  };
+  // 관리자: 아이돌 추가 승인
+  const menuIdolAdmin=$('#menuIdolAdmin');
+  if(menuIdolAdmin) menuIdolAdmin.onclick=async()=>{
+    openInfo(`<h3>🎤 아이돌 추가 승인</h3><p id="iadmStatus">불러오는 중…</p><div id="iadmList" class="adm-list"></div>`);
+    if(!window.fbGetPendingIdols){ $('#iadmStatus').textContent='관리자 기능은 배포 환경(깃허브)에서 작동해요.'; return; }
+    try{
+      const pend=await window.fbGetPendingIdols();
+      $('#iadmStatus').textContent = pend.length ? `대기 중 ${pend.length}건 · 승인 전 정보를 확인·수정할 수 있어요` : '대기 중인 요청이 없어요 ✨';
+      const wrap=$('#iadmList'); if(!wrap)return; wrap.innerHTML='';
+      pend.forEach(p=>{
+        const card=document.createElement('div'); card.className='adm-card';
+        card.innerHTML=`
+          <div style="display:flex;flex-direction:column;gap:6px;width:100%">
+            <input class="nick-input ia-name" value="${(p.name||'').replace(/"/g,'&quot;')}" placeholder="이름">
+            <input class="nick-input ia-group" value="${(p.group||'').replace(/"/g,'&quot;')}" placeholder="그룹">
+            <div style="display:flex;gap:6px">
+              <select class="nick-input ia-gender" style="flex:1"><option value="male"${p.gender!=='female'?' selected':''}>보이즈</option><option value="female"${p.gender==='female'?' selected':''}>걸즈</option></select>
+              <input class="nick-input ia-month" style="flex:1;min-width:0" type="number" min="1" max="12" value="${+p.birthMonth||''}" placeholder="월">
+              <input class="nick-input ia-day" style="flex:1;min-width:0" type="number" min="1" max="31" value="${+p.birthDay||''}" placeholder="일">
+            </div>
+          </div>
+          <div class="adm-acts"><button class="adm-ok">승인</button><button class="adm-no">거절</button></div>`;
+        card.querySelector('.adm-ok').onclick=async()=>{
+          const patch={ name:card.querySelector('.ia-name').value.trim(), group:card.querySelector('.ia-group').value.trim(),
+            gender:card.querySelector('.ia-gender').value, birthMonth:+card.querySelector('.ia-month').value, birthDay:+card.querySelector('.ia-day').value };
+          if(!patch.name||!patch.group||!(patch.birthMonth>=1&&patch.birthMonth<=12)||!(patch.birthDay>=1&&patch.birthDay<=31)){ toast('이름·그룹·생일을 정확히 입력해 주세요'); return; }
+          try{ await window.fbReviewIdol(p.id,true,patch); injectApprovedIdol(Object.assign({id:p.id},patch)); try{computeFinalists();buildTabs();buildList();}catch(e){} card.remove(); toast('승인 완료 · 명단에 등록됐어요 💗'); }catch(e){ console.error(e); toast('처리 실패'); }
+        };
+        card.querySelector('.adm-no').onclick=async()=>{ try{ await window.fbReviewIdol(p.id,false); card.remove(); toast('거절했어요'); }catch(e){ toast('처리 실패'); } };
+        wrap.appendChild(card);
+      });
+    }catch(e){ console.error(e); $('#iadmStatus').textContent='불러오기에 실패했어요'; }
+  };
+  // 관리자: 이달의 스타 신청 집계
+  const menuStarAdmin=$('#menuStarAdmin');
+  if(menuStarAdmin) menuStarAdmin.onclick=async()=>{
+    openInfo(`<h3>⭐ 이달의 스타 신청 집계</h3><p id="sadmStatus">불러오는 중…</p><div id="sadmList" class="adm-list"></div>`);
+    if(!window.fbGetNominationTally){ $('#sadmStatus').textContent='관리자 기능은 배포 환경(깃허브)에서 작동해요.'; return; }
+    try{
+      const tally=await window.fbGetNominationTally();
+      $('#sadmStatus').textContent = tally.length ? `이번 달 신청 ${tally.length}명 · 많은 순 (다음달 후보 선정 참고)` : '이번 달 신청이 아직 없어요';
+      const wrap=$('#sadmList'); if(!wrap)return;
+      wrap.innerHTML = tally.map((t,i)=>`<div class="adm-card" style="align-items:center"><div style="font-family:'Black Han Sans';color:var(--pink-deep);width:30px;text-align:center">${i+1}</div><div style="flex:1"><b>${t.name||t.idolId}</b></div><div style="font-family:'Black Han Sans';color:var(--pink-deep)">${fmt(t.count)}회</div></div>`).join('');
+    }catch(e){ console.error(e); $('#sadmStatus').textContent='불러오기에 실패했어요'; }
+  };
+  // 관리자: 월별 운영 설정 (본선월/예선월/광고월/스타명단/오픈여부/본선 임의선정)
+  const menuSchedAdmin=$('#menuSchedAdmin');
+  if(menuSchedAdmin) menuSchedAdmin.onclick=async()=>{
+    if(!window.fbSetSchedule){ openInfo(`<h3>📅 월별 운영 설정</h3><p>관리자 기능은 배포 환경(깃허브)에서 작동해요.</p>`); return; }
+    const cur=(await window.fbGetSchedule())||{};
+    const of=String(cur.openFinal||OPEN_FINAL), op=String(cur.openPrelim||OPEN_PRELIM), am=String(cur.adMonth||AD_MONTH);
+    const go=(typeof cur.groupOpen==='boolean')?cur.groupOpen:GROUP_OPEN;
+    const so=(typeof cur.starOpen==='boolean')?cur.starOpen:STAR_OPEN;
+    const curStars=new Set(Array.isArray(cur.starIds)&&cur.starIds.length?cur.starIds:STAR_IDS);
+    const hp=cur.handpickFinal||HANDPICK_FINAL;
+    const hpMonths=Object.keys(hp);
+    const mOpt=(v)=>Array.from({length:12},(_,i)=>String(i+1)).map(m=>`<option value="${m}" ${m===v?'selected':''}>${m}월</option>`).join('');
+    const rm=roundMeta(of), rp=roundMeta(op), sm=starMeta(am);
+    // 스타 후보: 전체 로스터에서 검색 선택
+    const starRows=Object.values(STATE).sort((a,b)=>a.nm.localeCompare(b.nm,'ko')).map(d=>
+      `<label class="grpchk" data-nm="${d.nm} ${d.gp||''}"><input type="checkbox" value="${d.id}" ${curStars.has(d.id)?'checked':''}><span>${d.nm} <small style="color:var(--mute)">${d.gp||''}</small></span></label>`).join('');
+    openInfo(`<h3>📅 월별 운영 설정</h3>
+      <p class="warn">여기서 바꾸면 <b>앱 업데이트 없이</b> 모든 사용자에게 바로 반영돼요.</p>
+
+      <p style="margin-top:10px"><b>🎂 생일 본선 · 진행 월</b></p>
+      <select id="schFinal" class="selbox">${mOpt(of)}</select>
+      <p class="hint" id="schFinalInfo">투표 ${rm.final} · 시안 ${rm.submit} · 광고 ${rm.ad}</p>
+
+      <p style="margin-top:10px"><b>⚔️ 생일 예선 · 진행 월</b></p>
+      <select id="schPrelim" class="selbox">${mOpt(op)}</select>
+      <p class="hint" id="schPrelimInfo">투표 ${rp.prelim} · TOP ${FINAL_SLOTS} 진출</p>
+
+      <p style="margin-top:10px"><b>⭐ 이달의 스타/그룹 · 광고 월</b></p>
+      <select id="schAd" class="selbox">${mOpt(am)}</select>
+      <p class="hint" id="schAdInfo">투표 ${sm.vote} · 시안 ${sm.submit} · 광고 ${sm.ad}</p>
+
+      <p style="margin-top:12px"><b>🔓 오픈 여부</b></p>
+      <label class="grpchk"><input type="checkbox" id="schStarOpen" ${so?'checked':''}><span>이달의 스타 열기</span></label>
+      <label class="grpchk"><input type="checkbox" id="schGroupOpen" ${go?'checked':''}><span>이달의 그룹 열기</span></label>
+
+      <p style="margin-top:12px"><b>⭐ 이달의 스타 명단</b> · <span id="schStarCount">${curStars.size}</span>명 선택됨</p>
+      <input id="schStarSearch" class="selbox" placeholder="이름·그룹 검색" style="margin-bottom:6px">
+      <div id="schStarList" style="max-height:220px;overflow:auto;margin:6px 0">${starRows}</div>
+
+      <p style="margin-top:12px"><b>🏆 본선 임의 선정</b></p>
+      <p class="hint">비워두면 예선 TOP ${FINAL_SLOTS}가 자동으로 본선에 올라요. 특별 회차엔 아래에서 월별로 지정할 수 있어요.</p>
+      <p class="hint">현재 임의 선정: <b>${hpMonths.length?hpMonths.map(m=>m+'월('+hp[m].length+'명)').join(', '):'없음 (자동)'}</b></p>
+      <label class="grpchk"><input type="checkbox" id="schHpClear"><span>임의 선정 모두 해제 (예선 자동으로 전환)</span></label>
+
+      <a class="primary" href="#" id="schSave" style="margin-top:12px">저장하기 →</a>`);
+
+    const upd=()=>{
+      const f=$('#schFinal').value, p=$('#schPrelim').value, a=$('#schAd').value;
+      const r1=roundMeta(f), r2=roundMeta(p), s=starMeta(a);
+      $('#schFinalInfo').textContent=`투표 ${r1.final} · 시안 ${r1.submit} · 광고 ${r1.ad}`;
+      $('#schPrelimInfo').textContent=`투표 ${r2.prelim} · TOP ${FINAL_SLOTS} 진출`;
+      $('#schAdInfo').textContent=`투표 ${s.vote} · 시안 ${s.submit} · 광고 ${s.ad}`;
+    };
+    ['schFinal','schPrelim','schAd'].forEach(id=>$('#'+id).addEventListener('change',upd));
+    const sl=$('#schStarList');
+    sl.addEventListener('change',()=>{ $('#schStarCount').textContent=sl.querySelectorAll('input:checked').length; });
+    $('#schStarSearch').addEventListener('input',e=>{
+      const q=e.target.value.trim().toLowerCase();
+      sl.querySelectorAll('.grpchk').forEach(l=>{ l.style.display = !q || (l.dataset.nm||'').toLowerCase().includes(q) ? '' : 'none'; });
+    });
+    $('#schSave').onclick=async(e)=>{
+      e.preventDefault();
+      const starIds=[...sl.querySelectorAll('input:checked')].map(i=>i.value);
+      if(!starIds.length){ toast('이달의 스타를 최소 1명 선택해주세요'); return; }
+      const cfg={
+        openFinal:$('#schFinal').value,
+        openPrelim:$('#schPrelim').value,
+        adMonth:$('#schAd').value,
+        starOpen:$('#schStarOpen').checked,
+        groupOpen:$('#schGroupOpen').checked,
+        starIds,
+        handpickFinal: $('#schHpClear').checked ? {} : hp
+      };
+      try{
+        await window.fbSetSchedule(cfg);
+        applySchedule(cfg);
+        infoScrim.classList.remove('show');
+        toast('📅 월별 설정 저장 완료! 모든 사용자에게 반영돼요');
+      }catch(err){ console.error(err); toast('저장에 실패했어요'); }
+    };
+  };
+
+  // 관리자: 이달의 그룹 설정 (체크박스로 이번 달 노출 그룹 선택)
+  const menuGroupAdmin=$('#menuGroupAdmin');
+  if(menuGroupAdmin) menuGroupAdmin.onclick=async()=>{
+    if(!window.fbSetMonthGroups){ openInfo(`<h3>👥 이달의 그룹 설정</h3><p>관리자 기능은 배포 환경(깃허브)에서 작동해요.</p>`); return; }
+    // 최신 설정 반영
+    if(window.fbGetMonthGroups){ const ids=await window.fbGetMonthGroups(); if(ids&&ids.length)activeGroupIds=ids; }
+    const sel=new Set(activeGroupIds);
+    const rows=GROUPS.slice().sort((a,b)=>a.nm.localeCompare(b.nm,'ko')).map(g=>
+      `<label class="grpchk"><input type="checkbox" value="${g.id}" ${sel.has(g.id)?'checked':''}><span>${g.nm}</span></label>`).join('');
+    openInfo(`<h3>👥 이달의 그룹 설정</h3>
+      <p>이번 달 <b>노출할 그룹</b>을 체크하세요 · <span id="grpCount">${sel.size}</span>팀 선택됨</p>
+      <p class="warn">체크한 그룹만 이달의 그룹 투표에 표시돼요. 15~20팀 정도를 권장해요.</p>
+      <div id="grpChkList" style="max-height:320px;overflow:auto;margin:8px 0">${rows}</div>
+      <a class="primary" href="#" id="grpSave">저장하기 →</a>`);
+    const list=$('#grpChkList');
+    list.addEventListener('change',()=>{ $('#grpCount').textContent=list.querySelectorAll('input:checked').length; });
+    $('#grpSave').onclick=async(e)=>{
+      e.preventDefault();
+      const ids=[...list.querySelectorAll('input:checked')].map(i=>i.value);
+      if(!ids.length){ toast('최소 1팀은 선택해주세요'); return; }
+      try{
+        await window.fbSetMonthGroups(ids);
+        activeGroupIds=ids;
+        if(rankView==='group')buildGroupList(); if(rankView==='hub')buildHubPodium();
+        infoScrim.classList.remove('show');
+        toast(`👥 이달의 그룹 ${ids.length}팀으로 설정 완료!`);
+      }catch(err){ console.error(err); toast('저장에 실패했어요'); }
+    };
+  };
+
+  // 데모 시작 득표(서버 데이터 쌓이기 전 보기 좋으라고). 실제 출시 땐 SEED_BASE=false로.
+  const SEED_BASE=false;
+  function baseSeed(id){ return SEED_BASE ? (5000+(hash(id)%50000)) : 0; }
+  Object.values(STATE).forEach(d=>{ d.votes=baseSeed(d.id); });
+  computeFinalists();
+  initStarVotes();
+  initGroupVotes();
+  // 관리자가 설정한 이번 달 노출 그룹 불러오기 (있으면 교체)
+  if(window.fbGetMonthGroups){ window.fbGetMonthGroups().then(ids=>{ if(ids&&ids.length){ activeGroupIds=ids; if(rankView==='group')buildGroupList(); if(rankView==='hub')buildHubPodium(); } }); }
+  // ⚙️ 월별 운영 설정 불러오기 (본선월/예선월/광고월/스타명단/오픈여부/임의선정) — 앱 업데이트 없이 매달 교체
+  function applySchedule(cfg){
+    if(!cfg) return;
+    if(cfg.openFinal)  OPEN_FINAL=String(cfg.openFinal);
+    if(cfg.openPrelim) OPEN_PRELIM=String(cfg.openPrelim);
+    if(cfg.adMonth)    AD_MONTH=String(cfg.adMonth);
+    if(typeof cfg.groupOpen==='boolean') GROUP_OPEN=cfg.groupOpen;
+    if(typeof cfg.starOpen==='boolean')  STAR_OPEN=cfg.starOpen;
+    if(Array.isArray(cfg.starIds)&&cfg.starIds.length) STAR_IDS=cfg.starIds;
+    if(cfg.handpickFinal&&typeof cfg.handpickFinal==='object') HANDPICK_FINAL=cfg.handpickFinal;
+    FINAL_MONTHS=monthsFrom(OPEN_FINAL,4);
+    PRELIM_MONTHS=monthsFrom(OPEN_PRELIM,3);
+    if(!FINAL_MONTHS.includes(active)&&!PRELIM_MONTHS.includes(active)) active=OPEN_FINAL;
+    initStarVotes(); initGroupVotes(); computeFinalists();
+    buildStageTabs(); buildTabs(); buildRoundHead(); buildList();
+    if(rankView==='hub') buildHubPodium();
+    if(rankView==='star') buildStarList();
+    if(rankView==='group') buildGroupList();
+  }
+  if(window.fbGetSchedule) window.fbGetSchedule().then(applySchedule);
+  else window.addEventListener('fb-ready',()=>{ if(window.fbGetSchedule) window.fbGetSchedule().then(applySchedule); });
+  // 보상값(공유·초대) 불러오기 — 앱 업데이트 없이 조정 가능
+  function applyRewards(cfg){
+    if(!cfg) return;
+    if(typeof cfg.shareHeart==='number')      SHARE_HEART=cfg.shareHeart;
+    if(typeof cfg.shareDailyLimit==='number') SHARE_DAILY_LIMIT=cfg.shareDailyLimit;
+    if(typeof cfg.inviteHostStar==='number')  INVITE_HOST_STAR=cfg.inviteHostStar;
+    if(typeof cfg.inviteGuestStar==='number') INVITE_GUEST_STAR=cfg.inviteGuestStar;
+    if(typeof cfg.inviteMonthlyCap==='number')INVITE_MONTHLY_CAP=cfg.inviteMonthlyCap;
+    const ir=$('#inviteReward'); if(ir)ir.textContent=`⭐+${INVITE_HOST_STAR}`;
+    const sr=$('#shareReward');  if(sr)sr.textContent=`💗+${SHARE_HEART}`;
+    const sb=$('#shareEarnBtn'); if(sb)sb.textContent=`공유하고 하트픽 ${SHARE_HEART}개 받기`;
+    refreshInvite();
+  }
+  if(window.fbGetRewards) window.fbGetRewards().then(applyRewards);
+  else window.addEventListener('fb-ready',()=>{ if(window.fbGetRewards) window.fbGetRewards().then(applyRewards); });
+  buildStageTabs();buildTabs();buildRoundHead();buildList();renderBalance();updateMe();showRankView('hub');
+
+  /* ---------- Firebase: 실시간 투표 동기화 ---------- */
+  let finalistsLocked=false;
+  function applyServerTotals(m){
+    Object.keys(STATE).forEach(id=>{ STATE[id].votes=baseSeed(id)+(m[id]||0); });
+    STAR_IDS.forEach(id=>{ starVotes[id]=starSeed(id)+(m['star:'+id]||0); });
+    GROUPS.forEach(g=>{ groupVotes[g.id]=groupSeed(g.id)+(m['group:'+g.id]||0); });
+    if(rankView==='star') buildStarList();
+    if(rankView==='group') buildGroupList();
+    if(rankView==='hub' && typeof buildHubPodium==='function') buildHubPodium();
+    if(!finalistsLocked){ computeFinalists(); finalistsLocked=true; }  // 본선 진출자는 첫 집계로 고정
+    if(screen==='rank'){ roundIdols(active).forEach(d=>bumpNum(d.id,false)); reorder(false); }
+  }
+  function hookFirebase(){ if(window.fbListen) window.fbListen(applyServerTotals); }
+  if(window.fbReady) hookFirebase(); else window.addEventListener('fb-ready',hookFirebase);
+})();
 </script>
 </body>
 </html>
