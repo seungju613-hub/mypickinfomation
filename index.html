@@ -81,7 +81,7 @@
 
   /* ---------- download ---------- */
   .dl{display:flex;flex-wrap:wrap;gap:22px;align-items:center;justify-content:center;margin:32px auto 8px;}
-  .qr{width:128px;height:128px;border-radius:18px;border:2px dashed var(--pink-soft);background:#fff;display:grid;place-items:center;text-align:center;color:var(--muted);font-size:.74rem;line-height:1.4;padding:10px;}
+  .qr{width:128px;height:128px;border-radius:18px;border:1px solid var(--pink-soft);background:#fff;display:grid;place-items:center;text-align:center;color:var(--muted);font-size:.74rem;line-height:1.4;padding:6px;overflow:hidden;}
   .qr b{display:block;color:var(--pink);font-size:.82rem;margin-bottom:3px;}
   .badges{display:flex;flex-direction:column;gap:10px;}
   .badge{display:flex;align-items:center;gap:11px;padding:11px 18px;border-radius:14px;background:#fff;border:1px solid var(--line);min-width:200px;opacity:.85;}
@@ -162,7 +162,7 @@
     <p class="hero-lead">매월 생일 투표로 최애를 1위에 올리고, 광고로 픽을 모아 응원하세요. 팬심이 모이면 전광판이 켜져요.</p>
 
     <div class="dl reveal">
-      <div class="qr"><span><b>지금 다운로드</b>Google Play에서<br>마이픽 검색 또는 클릭</span></div>
+      <div class="qr"><img src="qr.jpg" alt="마이픽 다운로드 QR 코드" style="width:100%;height:100%;object-fit:contain;border-radius:inherit"></div>
       <div class="badges">
         <a class="badge" href="https://play.google.com/store/apps/details?id=info.mypick.app" target="_blank" rel="noopener"><span class="ic">▶️</span><span class="t"><small>지금 다운로드</small><span>Google Play</span></span><span class="soon" style="background:#1ca672;color:#fff">받기 →</span></a>
         <div class="badge"><span class="ic">🍎</span><span class="t"><small>곧 만나요</small><span>App Store</span></span><span class="soon">준비 중</span></div>
