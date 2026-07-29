@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>MYPICK 실시간 순위</title>
+<meta property="og:title" content="MYPICK 실시간 순위">
+<meta property="og:description" content="최애에게 투표하고 함께 응원해요 💗">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{ --pink:#ff4d8d; --pink-deep:#e5397a; --bg:#fff; --bg-soft:#fff2f7; --ink:#2b2230; --mute:#9b8f97; --line:#f3e3ec; }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  body{font-family:'Noto Sans KR',sans-serif;color:var(--ink);background:linear-gradient(180deg,#fff5f9,#ffe9f2);min-height:100vh;}
+  .wrap{max-width:520px;margin:0 auto;padding:22px 16px 40px;}
+  .top{text-align:center;padding:14px 0 18px;}
+  .logo{font-family:'Black Han Sans';font-size:34px;background:linear-gradient(135deg,#ff8cc6,#ff3782);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1;}
+  .subttl{margin-top:8px;font-family:'Black Han Sans';font-size:20px;color:var(--pink-deep);}
+  .period{margin-top:6px;font-size:12.5px;color:var(--mute);font-weight:500;}
+  .card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:8px;margin-top:14px;box-shadow:0 18px 40px -24px rgba(255,77,141,.4);}
+  .row{display:flex;align-items:center;gap:11px;padding:10px 10px;border-radius:14px;}
+  .row+.row{border-top:1px solid var(--line);}
+  .row.top1{background:linear-gradient(135deg,#fff6fb,#ffeaf4);}
+  .rank{width:26px;text-align:center;font-family:'Black Han Sans';font-size:18px;color:var(--pink-deep);flex:none;}
+  .rank.medal{font-size:20px;}
+  .ava{width:50px;height:50px;border-radius:50%;position:relative;overflow:hidden;display:grid;place-items:center;color:#fff;font-family:'Black Han Sans';font-size:19px;border:2px solid var(--line);flex:none;}
+  .ava img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  .who{flex:1;min-width:0;}
+  .nm{font-weight:800;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .gp{font-size:12px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .votes{font-family:'Black Han Sans';color:var(--pink-deep);font-size:15px;flex:none;text-align:right;}
+  .votes small{display:block;font-family:'Noto Sans KR';font-size:10px;color:var(--mute);font-weight:500;}
+  .empty{text-align:center;color:var(--mute);font-size:13.5px;padding:34px 10px;line-height:1.8;}
+  .cta{display:block;width:100%;text-align:center;margin-top:20px;background:linear-gradient(135deg,#ff8cc6,#ff3782);color:#fff;font-weight:800;font-size:15px;padding:15px;border-radius:15px;text-decoration:none;box-shadow:0 14px 30px -12px rgba(255,77,141,.7);}
+  .foot{text-align:center;font-size:11px;color:var(--mute);margin-top:16px;line-height:1.7;}
+  .langbtn{position:fixed;top:14px;right:14px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:12px;font-weight:800;color:var(--pink-deep);cursor:pointer;}
+  .skeleton{height:70px;border-radius:14px;background:linear-gradient(90deg,#fbeef4,#fff6fb,#fbeef4);background-size:200% 100%;animation:sh 1.2s infinite;margin:6px;}
+  @keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+</style>
+</head>
+<body>
+  <button class="langbtn" id="langBtn">한/EN</button>
+  <div class="wrap">
+    <div class="top">
+      <div class="logo">MYPICK</div>
+      <div class="subttl" id="subttl">실시간 순위</div>
+      <div class="period" id="period"></div>
+    </div>
+    <div class="card" id="list">
+      <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+    </div>
+    <a class="cta" id="cta" href="https://play.google.com/store/apps/details?id=info.mypick.app">📲 앱에서 투표하기 →</a>
+    <div class="foot" id="foot">＊ 실시간 집계 · 순위는 계속 바뀌어요</div>
+  </div>
+
+<script src="roster.js"></script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+  import { getFirestore, doc, getDoc, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+  /* ── 설정 ── */
+  const firebaseConfig = {
+    apiKey: "AIzaSyA0INqoWE6Ae1SOkMxc2UBcQm7v4bAyv-c",
+    authDomain: "mypick-d304e.firebaseapp.com",
+    projectId: "mypick-d304e",
+    storageBucket: "mypick-d304e.firebasestorage.app",
+    messagingSenderId: "178281594523",
+    appId: "1:178281594523:web:d6c493f81be0d90048103e"
+  };
+  const PLAY_URL='https://play.google.com/store/apps/details?id=info.mypick.app';
+
+  /* ── 파라미터 ── */
+  const P=new URLSearchParams(location.search);
+  const TYPE=(['final','prelim','star','group'].includes(P.get('type')))?P.get('type'):'final';
+  let LANG = P.get('lang')==='en' ? 'en' : (P.get('lang')==='ko' ? 'ko' : ((navigator.language||'').startsWith('ko')?'ko':'en'));
+
+  /* ── 표시 데이터 (앱과 동일) ── */
+  const PALETTE=[['#ff4d8d','#ff8cc6'],['#a855f7','#ec4899'],['#06b6d4','#3b82f6'],['#f59e0b','#ef4444'],['#10b981','#14b8a6'],['#8b5cf6','#d946ef'],['#f43f5e','#fb7185'],['#6366f1','#8b5cf6'],['#0ea5e9','#22d3ee'],['#14b8a6','#06b6d4']];
+  const hash=s=>{let h=0;s=String(s);for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return h;};
+  const initial=n=>(n||'?').trim().charAt(0);
+  const GROUP_EN={ '동방신기':'TVXQ','소녀시대':"Girls' Generation",'제로베이스원':'ZEROBASEONE','솔로':'Solo','빅뱅':'BIGBANG','르세라핌':'LE SSERAFIM','보이넥스트도어':'BOYNEXTDOOR','투어스':'TWS','뉴진스':'NewJeans','방탄소년단':'BTS','투모로우바이투게더':'TOMORROW X TOGETHER','세븐틴':'SEVENTEEN','엔하이픈':'ENHYPEN','몬스타엑스':'MONSTA X','아이들':'(G)I-DLE','엔플라잉':'N.Flying','앰퍼샌드원':'AMPERS&ONE','마마무':'MAMAMOO','원위':'ONEWE','슈퍼주니어':'SUPER JUNIOR','오마이걸':'OH MY GIRL','온앤오프':'ONF','베이비돈크라이':'BDC','트리플에스':'tripleS','다크비':'DKB','플레이브':'PLAVE','하이라이트':'Highlight','더윈드':'THE WIND','브브걸':'BBGIRLS','더보이즈':'THE BOYZ','아스트로':'ASTRO','포레스텔라':'Forestella','루시':'LUCY','NCT (통합)':'NCT' };
+  const GROUPS=[{"id":"grp_andteam","nm":"&TEAM","file":"group_andteam"},{"id":"grp_2pm","nm":"2PM","file":"group_2pm"},{"id":"grp_ab6ix","nm":"AB6IX","file":"group_ab6ix"},{"id":"grp_ahof","nm":"AHOF","file":"group_ahof"},{"id":"grp_allday","nm":"ALLDAY PROJECT","file":"group_allday"},{"id":"grp_ado","nm":"ALPHA DRIVE ONE","file":"group_ado"},{"id":"grp_artms","nm":"ARTMS","file":"group_artms"},{"id":"grp_arrc","nm":"ARrC","file":"group_arrc"},{"id":"grp_ateez","nm":"ATEEZ","file":"group_ateez"},{"id":"grp_apink","nm":"Apink","file":"group_apink"},{"id":"grp_axmxp","nm":"AxMxP","file":"group_axmxp"},{"id":"grp_bm","nm":"BABYMONSTER","file":"group_bm"},{"id":"grp_bv","nm":"BADVILLAIN","file":"group_bv"},{"id":"grp_bp","nm":"BLACKPINK","file":"group_bp"},{"id":"grp_billlie","nm":"Billlie","file":"group_billlie"},{"id":"grp_cortis","nm":"CORTIS","file":"group_cortis"},{"id":"grp_cravity","nm":"CRAVITY","file":"group_cravity"},{"id":"grp_cs","nm":"Candy Shop","file":"group_cs"},{"id":"grp_dd","nm":"DAILY:DIRECTION","file":"group_dd"},{"id":"grp_day6","nm":"DAY6","file":"group_day6"},{"id":"grp_drippin","nm":"DRIPPIN","file":"group_drippin"},{"id":"grp_evnne","nm":"EVNNE","file":"group_evnne"},{"id":"grp_exo","nm":"EXO","file":"group_exo"},{"id":"grp_fb","nm":"FANTASY BOYS","file":"group_fb"},{"id":"grp_ff","nm":"FIFTY FIFTY","file":"group_ff"},{"id":"grp_got7","nm":"GOT7","file":"group_got7"},{"id":"grp_idid","nm":"IDID","file":"group_idid"},{"id":"grp_idntt","nm":"IDNTT","file":"group_idntt"},{"id":"grp_illit","nm":"ILLIT","file":"group_illit"},{"id":"grp_itzy","nm":"ITZY","file":"group_itzy"},{"id":"grp_ive","nm":"IVE","file":"group_ive"},{"id":"grp_katseye","nm":"KATSEYE","file":"group_katseye"},{"id":"grp_kol","nm":"KISS OF LIFE","file":"group_kol"},{"id":"grp_kep1er","nm":"Kep1er","file":"group_kep1er"},{"id":"grp_kf","nm":"KickFlip","file":"group_kf"},{"id":"grp_kiiikiii","nm":"KiiiKiii","file":"group_kiiikiii"},{"id":"grp_meovv","nm":"MEOVV","file":"group_meovv"},{"id":"grp_nct","nm":"NCT (통합)","file":"group_nct"},{"id":"grp_nct127","nm":"NCT 127","file":"group_nct127"},{"id":"grp_nctdream","nm":"NCT DREAM","file":"group_nctdream"},{"id":"grp_wish","nm":"NCT WISH","file":"group_wish"},{"id":"grp_nmixx","nm":"NMIXX","file":"group_nmixx"},{"id":"grp_oy","nm":"ODD YOUTH","file":"group_oy"},{"id":"grp_p1h","nm":"P1Harmony","file":"group_p1h"},{"id":"grp_qwer","nm":"QWER","file":"group_qwer"},{"id":"grp_riize","nm":"RIIZE","file":"group_riize"},{"id":"grp_shinee","nm":"SHINee","file":"group_shinee"},{"id":"grp_stayc","nm":"STAYC","file":"group_stayc"},{"id":"grp_skz","nm":"Stray Kids","file":"group_skz"},{"id":"grp_tempest","nm":"TEMPEST","file":"group_tempest"},{"id":"grp_ssyn","nm":"THE SSYNDROME","file":"group_ssyn"},{"id":"grp_tnx","nm":"TNX","file":"group_tnx"},{"id":"grp_tre","nm":"TREASURE","file":"group_tre"},{"id":"grp_tunexx","nm":"TUNEXX","file":"group_tunexx"},{"id":"grp_twice","nm":"TWICE","file":"group_twice"},{"id":"grp_unchild","nm":"UNCHILD","file":"group_unchild"},{"id":"grp_unis","nm":"UNIS","file":"group_unis"},{"id":"grp_vvv","nm":"VERIVERY","file":"group_vvv"},{"id":"grp_viviz","nm":"VIVIZ","file":"group_viviz"},{"id":"grp_winner","nm":"WINNER","file":"group_winner"},{"id":"grp_wayv","nm":"WayV","file":"group_wayv"},{"id":"grp_xh","nm":"Xdinary Heroes","file":"group_xh"},{"id":"grp_yp","nm":"YOUNG POSSE","file":"group_yp"},{"id":"grp_aespa","nm":"aespa","file":"group_aespa"},{"id":"grp_god","nm":"god","file":"group_god"},{"id":"grp_izna","nm":"izna","file":"group_izna"},{"id":"grp_nssign","nm":"n.SSign","file":"group_nssign"},{"id":"grp_xikers","nm":"xikers","file":"group_xikers"},{"id":"grp_njz","nm":"뉴진스","file":"group_njz"},{"id":"grp_dkb","nm":"다크비","file":"group_dkb"},{"id":"grp_tbz","nm":"더보이즈","file":"group_tbz"},{"id":"grp_wind","nm":"더윈드","file":"group_wind"},{"id":"grp_tvxq","nm":"동방신기","file":"group_tvxq"},{"id":"grp_lucy","nm":"루시","file":"group_lucy"},{"id":"grp_lsf","nm":"르세라핌","file":"group_lsf"},{"id":"grp_mamamoo","nm":"마마무","file":"group_mamamoo"},{"id":"grp_mx","nm":"몬스타엑스","file":"group_mx"},{"id":"grp_bts","nm":"방탄소년단","file":"group_bts"},{"id":"grp_bdc","nm":"베이비돈크라이","file":"group_bdc"},{"id":"grp_bnd","nm":"보이넥스트도어","file":"group_bnd"},{"id":"grp_bbg","nm":"브브걸","file":"group_bbg"},{"id":"grp_bigbang","nm":"빅뱅","file":"group_bigbang"},{"id":"grp_svt","nm":"세븐틴","file":"group_svt"},{"id":"grp_snsd","nm":"소녀시대","file":"group_snsd"},{"id":"grp_suju","nm":"슈퍼주니어","file":"group_suju"},{"id":"grp_astro","nm":"아스트로","file":"group_astro"},{"id":"grp_gidle","nm":"아이들","file":"group_gidle"},{"id":"grp_amp","nm":"앰퍼샌드원","file":"group_amp"},{"id":"grp_nflying","nm":"엔플라잉","file":"group_nflying"},{"id":"grp_enha","nm":"엔하이픈","file":"group_enha"},{"id":"grp_omg","nm":"오마이걸","file":"group_omg"},{"id":"grp_onf","nm":"온앤오프","file":"group_onf"},{"id":"grp_onewe","nm":"원위","file":"group_onewe"},{"id":"grp_zb1","nm":"제로베이스원","file":"group_zb1"},{"id":"grp_txt","nm":"투모로우바이투게더","file":"group_txt"},{"id":"grp_tws","nm":"투어스","file":"group_tws"},{"id":"grp_sss","nm":"트리플에스","file":"group_sss"},{"id":"grp_forestella","nm":"포레스텔라","file":"group_forestella"},{"id":"grp_plave","nm":"플레이브","file":"group_plave"},{"id":"grp_highlight","nm":"하이라이트","file":"group_highlight"}];
+  const DEFAULT_STARS=["jungkook_bts","suga_bts","jimin_bts","jin_bts","rio_ado","sangwon_ado","sanghyeon_ado","jihoon_solo","yejun_plave","eunho_plave","yeonjun_txt","ej_andteam","felix_skz","han_skz","sungchan_riize","wonbin_riize","seonghyeon_cortis","keonho_cortis","jaehyun_bnd","taesan_bnd"];
+  const DEFAULT_HP9=["anyujin_ive","jungkook_bts","sungho_bnd","rm_bts","yejun_plave","sungchan_riize","yeonjun_txt","han_skz","felix_skz","sanghyeon_ado","seungmin_skz","key_shinee","gaeul_ive","ej_andteam","tsuki_billlie","nayeon_twice","keeho_p1h","gyehun_kf","moonsua_billlie","jeongwoo_ahof"];
+  const EN_MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const monthLabel=m=>LANG==='en'?(EN_MONTHS[(+m)-1]||m):(m+'월');
+  const groupLabel=g=>(LANG==='en'&&GROUP_EN[g])?GROUP_EN[g]:g;
+  const idolName=d=>(LANG==='en'&&d&&d.nameEn)?d.nameEn:(d?(d.nm||d.name||''):'');
+
+  const I18N={
+    ko:{ ttl:{final:'생일 본선 TOP 10',prelim:'생일 예선 TOP 10',star:'이달의 스타 TOP 10',group:'이달의 그룹 TOP 10'}, votes:'표', cta:'📲 앱에서 투표하기 →', foot:'＊ 실시간 집계 · 순위는 계속 바뀌어요', empty:'아직 집계된 표가 없어요 🔜<br>앱에서 첫 투표의 주인공이 되어보세요!', period:{final:'{m} 생일 본선',prelim:'{m} 생일 예선',star:'{m} 이달의 스타',group:'{m} 이달의 그룹'} },
+    en:{ ttl:{final:'Birthday Finals TOP 10',prelim:'Birthday Prelims TOP 10',star:'Star of the Month TOP 10',group:'Group of the Month TOP 10'}, votes:'votes', cta:'📲 Vote in the app →', foot:'＊ Live tally · rankings keep changing', empty:'No votes counted yet 🔜<br>Be the first to vote in the app!', period:{final:'{m} Birthday Finals',prelim:'{m} Birthday Prelims',star:'{m} Star of the Month',group:'{m} Group of the Month'} }
+  };
+  const t=k=>I18N[LANG][k];
+
+  /* ── Firebase ── */
+  const app=initializeApp(firebaseConfig);
+  const db=getFirestore(app);
+  const idolById={};
+  (window.ROSTER||[]).forEach(d=>{ idolById[d.id]=d; });   // roster.js
+  const groupById={}; GROUPS.forEach(g=>{ groupById[g.id]=g; });
+
+  async function loadConfig(){
+    let sched={}, monthGroups=null;
+    try{ const s=await getDoc(doc(db,'config','schedule')); if(s.exists())sched=s.data(); }catch(e){}
+    try{ const g=await getDoc(doc(db,'config','monthGroups')); if(g.exists())monthGroups=(g.data().ids)||null; }catch(e){}
+    // 관리자 등록 아이돌 + 사진 override
+    try{ const q1=query(collection(db,'idolRequests'),where('status','==','approved')); const snap=await getDocs(q1);
+      snap.forEach(dd=>{ const d=dd.data(); const id='req_'+dd.id; idolById[id]={id,name:d.name,nameEn:d.nameEn||'',group:d.group,nameEnGroup:d.groupEn||'',photo:d.photo||''}; if(d.groupEn&&d.group&&!GROUP_EN[d.group])GROUP_EN[d.group]=d.groupEn; });
+    }catch(e){}
+    try{ const snap=await getDocs(collection(db,'idolPhotos')); snap.forEach(dd=>{ const v=dd.data(); if(v&&v.url&&idolById[dd.id]) idolById[dd.id].photo=v.url; }); }catch(e){}
+    return {sched, monthGroups};
+  }
+  async function loadTallies(){
+    const m={};
+    try{ const snap=await getDocs(collection(db,'tallies')); snap.forEach(d=>{ m[d.id]=(d.data().votes)||0; }); }catch(e){ console.error('집계 로드 실패',e); }
+    return m;
+  }
+
+  function avatar(d){
+    const c=PALETTE[hash(d.id)%PALETTE.length];
+    const grad=`background:linear-gradient(135deg,${c[0]},${c[1]})`;
+    const src=d.photo||'';
+    const img=src?`<img src="${src}" alt="" loading="lazy" onerror="this.remove()">`:'';
+    return `<div class="ava" style="${grad}">${initial(idolName(d))}${img}</div>`;
+  }
+  function groupAvatar(g){
+    const c=PALETTE[hash(g.id)%PALETTE.length];
+    const grad=`background:linear-gradient(135deg,${c[0]},${c[1]})`;
+    return `<div class="ava" style="${grad}">${initial(groupLabel(g.nm))}<img src="images/${g.file}.jpg" alt="" loading="lazy" onerror="this.remove()"></div>`;
+  }
+
+  function build(list){   // [{name, sub, votes, avatar}]
+    const el=document.getElementById('list');
+    if(!list.length){ el.innerHTML=`<div class="empty">${t('empty')}</div>`; return; }
+    const medal=['🥇','🥈','🥉'];
+    el.innerHTML=list.map((it,i)=>`<div class="row ${i===0?'top1':''}">
+      <div class="rank ${i<3?'medal':''}">${i<3?medal[i]:(i+1)}</div>
+      ${it.avatar}
+      <div class="who"><div class="nm">${it.name}</div><div class="gp">${it.sub}</div></div>
+      <div class="votes">${(it.votes||0).toLocaleString()}<small>${t('votes')}</small></div>
+    </div>`).join('');
+  }
+
+  (async function(){
+    document.documentElement.lang=LANG;
+    document.getElementById('subttl').textContent=t('ttl')[TYPE];
+    document.getElementById('cta').textContent=t('cta');
+    document.getElementById('cta').href=PLAY_URL;
+    document.getElementById('foot').textContent=t('foot');
+    document.title='MYPICK · '+t('ttl')[TYPE];
+
+    const {sched, monthGroups}=await loadConfig();
+    const tallies=await loadTallies();
+
+    const openFinal=String(sched.openFinal||'9');
+    const openPrelim=String(sched.openPrelim||'10');
+    const adMonth=String(sched.adMonth||'9');
+    const starIds=(Array.isArray(sched.starIds)&&sched.starIds.length)?sched.starIds:DEFAULT_STARS;
+    const handpick=(sched.handpickFinal&&typeof sched.handpickFinal==='object')?sched.handpickFinal:{'9':DEFAULT_HP9};
+
+    let items=[], periodMonth='';
+    const idolsInMonth=m=>Object.values(idolById).filter(d=>String(d.birthMonth)===String(m));
+
+    if(TYPE==='final'){
+      periodMonth=openFinal;
+      let ids = handpick[openFinal] ? handpick[openFinal] : idolsInMonth(openFinal).map(d=>d.id);
+      items=ids.map(id=>({d:idolById[id],v:tallies[id]||0})).filter(x=>x.d);
+    } else if(TYPE==='prelim'){
+      periodMonth=openPrelim;
+      items=idolsInMonth(openPrelim).map(d=>({d,v:tallies[d.id]||0}));
+    } else if(TYPE==='star'){
+      periodMonth=adMonth;
+      items=starIds.map(id=>({d:idolById[id],v:tallies['star:'+id]||0})).filter(x=>x.d);
+    } else if(TYPE==='group'){
+      periodMonth=adMonth;
+      const ids=(monthGroups&&monthGroups.length)?monthGroups:GROUPS.map(g=>g.id);
+      items=ids.map(id=>({g:groupById[id],v:tallies['group:'+id]||0})).filter(x=>x.g);
+    }
+
+    document.getElementById('period').textContent = t('period')[TYPE].replace('{m}',monthLabel(periodMonth));
+
+    items.sort((a,b)=>b.v-a.v);
+    const top=items.slice(0,10).map(x=> x.g
+      ? { name:groupLabel(x.g.nm), sub:(LANG==='en'?'Group':'그룹'), votes:x.v, avatar:groupAvatar(x.g) }
+      : { name:idolName(x.d), sub:groupLabel(x.d.group||x.d.gp||''), votes:x.v, avatar:avatar(x.d) }
+    );
+    build(top);
+  })();
+
+  document.getElementById('langBtn').onclick=()=>{
+    const u=new URL(location.href); u.searchParams.set('lang', LANG==='ko'?'en':'ko'); location.href=u.toString();
+  };
+</script>
+</body>
+</html>
